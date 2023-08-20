@@ -2,6 +2,7 @@ using DataAccess.Sqlite;
 using Infrastructure.Implementation;
 using Utils.Modules;
 using UseCases;
+using Microsoft.AspNetCore.Identity;
 
 namespace Api;
 
