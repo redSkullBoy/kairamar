@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Models;
+﻿using Domain.Entities.AppDb;
 using Infrastructure.Interfaces.DataAccess;
 using Infrastructure.Interfaces.Services;
 

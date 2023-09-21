@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Interfaces.DataAccess;
 using Utils.Modules;
@@ -12,10 +11,11 @@ public class DataAccessModule : Module
     public override void Load(IServiceCollection services)
     {
         services.AddDbContext<IDbContext, AppDbContext>(options =>
-            options.UseSqlite(Configuration!.GetConnectionString("SqliteConnection")));
+            options.UseSqlite("Data Source=kairamar.db"));
 
-        services.AddIdentityCore<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddRoles<IdentityRole>()
+        services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<AppDbContext>();
+
+        services.AddTransient<ITokenClaimsService, IdentityTokenClaimService>();
     }
 }

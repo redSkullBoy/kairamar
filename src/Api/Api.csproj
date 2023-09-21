@@ -7,11 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints.Swagger" Version="5.17.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.22">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess.Sqlite\DataAccess.Sqlite.csproj" />
+    <ProjectReference Include="..\Endpoints\Endpoints.csproj" />
     <ProjectReference Include="..\Infrastructure.Implementation\Infrastructure.Implementation.csproj" />
     <ProjectReference Include="..\UseCases\UseCases.csproj" />
     <ProjectReference Include="..\Utils\Utils.csproj" />

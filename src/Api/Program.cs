@@ -2,7 +2,8 @@ using DataAccess.Sqlite;
 using Infrastructure.Implementation;
 using Utils.Modules;
 using UseCases;
-using Microsoft.AspNetCore.Identity;
+using FastEndpoints;
+using FastEndpoints.Swagger;
 
 namespace Api;
 
@@ -24,14 +25,14 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddFastEndpoints();
+        builder.Services.SwaggerDocument(); //add this
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
             app.UseSwaggerUI();
         }
 
@@ -39,6 +40,8 @@ public class Program
 
         app.UseAuthorization();
 
+        app.UseFastEndpoints();
+        app.UseSwaggerGen(); //add this
 
         app.MapControllers();
 

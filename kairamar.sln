@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 Utils", "0 Utils", "{1535
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 UseCases", "2 UseCases", "{2E6C684B-CA49-4596-9866-7061DE3390AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Interfaces", "src\Infrastructure.Interfaces\Infrastructure.Interfaces.csproj", "{B2FBC50C-5BBE-46E8-ACAE-9FEA6D4F7733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Interfaces", "src\Infrastructure.Interfaces\Infrastructure.Interfaces.csproj", "{B2FBC50C-5BBE-46E8-ACAE-9FEA6D4F7733}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Entities", "src\Domain.Entities\Domain.Entities.csproj", "{B7D9DE5F-F205-4BE5-8914-6218A9C01E86}"
 EndProject
@@ -19,15 +19,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 Frameworks", "4 Framework
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 Tests", "5 Tests", "{9AE5758A-4EFD-40B6-9685-DD34385D482A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Sqlite", "src\DataAccess.Sqlite\DataAccess.Sqlite.csproj", "{FED6839E-5A53-4F7D-96C4-5B349B7BEFD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess.Sqlite", "src\DataAccess.Sqlite\DataAccess.Sqlite.csproj", "{FED6839E-5A53-4F7D-96C4-5B349B7BEFD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "src\Utils\Utils.csproj", "{91F4BE70-9B3B-4845-91A8-AA33211F0626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "src\Utils\Utils.csproj", "{91F4BE70-9B3B-4845-91A8-AA33211F0626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Implementation", "src\Infrastructure.Implementation\Infrastructure.Implementation.csproj", "{C04F272B-2581-45BF-BC21-29C5C48D61F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Implementation", "src\Infrastructure.Implementation\Infrastructure.Implementation.csproj", "{C04F272B-2581-45BF-BC21-29C5C48D61F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UseCases", "src\UseCases\UseCases.csproj", "{CD95EDDD-7685-459B-9BEF-AC782863DE85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UseCases", "src\UseCases\UseCases.csproj", "{CD95EDDD-7685-459B-9BEF-AC782863DE85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{647E61F7-7A79-4984-AEE4-08C8D3E3E28C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\Api\Api.csproj", "{647E61F7-7A79-4984-AEE4-08C8D3E3E28C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationServices.Interfaces", "src\ApplicationServices.Interfaces\ApplicationServices.Interfaces.csproj", "{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationServices.Implementation", "src\ApplicationServices.Implementation\ApplicationServices.Implementation.csproj", "{3814411B-3A5A-414C-AC77-EC669B6D5631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints", "src\Endpoints\Endpoints.csproj", "{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +69,18 @@ Global
 		{647E61F7-7A79-4984-AEE4-08C8D3E3E28C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{647E61F7-7A79-4984-AEE4-08C8D3E3E28C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{647E61F7-7A79-4984-AEE4-08C8D3E3E28C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3814411B-3A5A-414C-AC77-EC669B6D5631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3814411B-3A5A-414C-AC77-EC669B6D5631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3814411B-3A5A-414C-AC77-EC669B6D5631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3814411B-3A5A-414C-AC77-EC669B6D5631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +93,9 @@ Global
 		{C04F272B-2581-45BF-BC21-29C5C48D61F2} = {654AA49C-2866-4998-8A10-3DD04566A7D8}
 		{CD95EDDD-7685-459B-9BEF-AC782863DE85} = {2E6C684B-CA49-4596-9866-7061DE3390AD}
 		{647E61F7-7A79-4984-AEE4-08C8D3E3E28C} = {654AA49C-2866-4998-8A10-3DD04566A7D8}
+		{EA66E11E-9FB6-42C1-8C3C-604F9E02CE06} = {2E6C684B-CA49-4596-9866-7061DE3390AD}
+		{3814411B-3A5A-414C-AC77-EC669B6D5631} = {654AA49C-2866-4998-8A10-3DD04566A7D8}
+		{F7BCF92B-D3D7-481F-AB4F-C2E970AD5AA5} = {7671AC63-D688-44C4-9238-39AC58931E8D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EF588D-D295-458A-BFCE-25FD16CE72E3}

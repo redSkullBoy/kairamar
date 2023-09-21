@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Models;
+﻿using Domain.Entities.AppDb;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Interfaces.DataAccess;
