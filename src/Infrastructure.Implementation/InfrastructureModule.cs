@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Implementation.Options;
 using Infrastructure.Implementation.Services;
 using Infrastructure.Interfaces.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Utils.Modules;
 
@@ -11,7 +12,7 @@ public class InfrastructureModule : Module
     public override void Load(IServiceCollection services)
     {
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped <IEmailSender, EmailService>();
 
         //services.AddTransient<SendEmailsJob>();
 

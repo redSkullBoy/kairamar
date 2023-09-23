@@ -1,4 +1,4 @@
-﻿namespace Endpoints.AuthEndpoints;
+﻿namespace Endpoints.Auth;
 
 public class AuthenticateResponse
 {

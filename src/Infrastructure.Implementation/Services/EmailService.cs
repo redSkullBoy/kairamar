@@ -1,10 +1,10 @@
 ﻿using Domain.Entities.AppDb;
 using Infrastructure.Interfaces.DataAccess;
-using Infrastructure.Interfaces.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Infrastructure.Implementation.Services;
 
-internal class EmailService : IEmailService
+internal class EmailService : IEmailSender
 {
     private readonly IDbContext _dbContext;
 
@@ -22,8 +22,8 @@ internal class EmailService : IEmailService
             Body = body
         };
 
-        _dbContext.Emails.Add(newMail);
+        //_dbContext.Emails.Add(newMail);
 
-        await _dbContext.SaveChangesAsync();
+        //await _dbContext.SaveChangesAsync();
     }
 }

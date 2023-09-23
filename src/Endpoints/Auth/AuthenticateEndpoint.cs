@@ -3,7 +3,7 @@ using FastEndpoints;
 using Infrastructure.Interfaces.DataAccess;
 using Microsoft.AspNetCore.Identity;
 
-namespace Endpoints.AuthEndpoints;
+namespace Endpoints.Auth;
 
 public class AuthenticateEndpoint : Endpoint<AuthenticateRequest, AuthenticateResponse>
 {
@@ -24,9 +24,16 @@ public class AuthenticateEndpoint : Endpoint<AuthenticateRequest, AuthenticateRe
 
     public override async Task HandleAsync(AuthenticateRequest request, CancellationToken cancellationToken)
     {
-        if(request.Username is null || request.Password is null)
+        if(request.Username is null)
         {
-            AddError("Username or Password is null");
+            AddError(r => r.Username, "Username is null");
+
+            await SendErrorsAsync();
+            return;
+        }
+        if (request.Password is null)
+        {
+            AddError(r => r.Password, "Password is null");
 
             await SendErrorsAsync();
             return;

@@ -1,6 +1,6 @@
-﻿namespace Endpoints.AuthEndpoints;
+﻿namespace Endpoints.Register;
 
-public class AuthenticateRequest
+public class RegisterResponse
 {
     public string? Username { get; set; }
     public string? Password { get; set; }
