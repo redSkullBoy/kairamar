@@ -12,7 +12,9 @@ public class InfrastructureModule : Module
     public override void Load(IServiceCollection services)
     {
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-        services.AddScoped <IEmailSender, EmailService>();
+        services.AddScoped<IEmailSender, EmailService>();
+
+        services.AddTransient<IDataRefineService, DadataRefineService>();
 
         //services.AddTransient<SendEmailsJob>();
 

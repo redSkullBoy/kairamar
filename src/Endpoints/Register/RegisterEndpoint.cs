@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Endpoints.Register;
+
 public class RegisterEndpoint : Endpoint<RegisterRequest, RegisterResponse>
 {
     private readonly SignInManager<AppUser> _signInManager;
