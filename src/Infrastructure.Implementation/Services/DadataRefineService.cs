@@ -16,9 +16,9 @@ public class DadataRefineService : IDataRefineService
         _config = options;
     }
 
-    public async Task<Result<AddressDataDto>> AddressAutoFillingAsync(string text)
+    public async Task<Result<List<AddressDataDto>>> AddressAutoFillingAsync(string text)
     {
-        var addressData = new AddressDataDto();
+        var addressData = new List<AddressDataDto>();
 
         var response = new Dadata.Model.SuggestResponse<Dadata.Model.Address>();
 
@@ -34,12 +34,19 @@ public class DadataRefineService : IDataRefineService
 
         if (response.suggestions.Count > 0)
         {
-            var address = response.suggestions[0].data;
+            foreach (var suggest in response.suggestions)
+            {
+                var addressDto = new AddressDataDto
+                {
+                    Note = suggest.unrestricted_value,
+                    PostalCode = suggest.data.postal_code,
+                    Country = suggest.data.country,
+                    City = suggest.data.city,
+                    Region = suggest.data.region,
+                };
 
-            addressData.PostalCode = address.postal_code;
-            addressData.Country = address.country;
-            addressData.City = address.city;
-            addressData.Region = address.region;
+                addressData.Add(addressDto);
+            }
 
             return Result.Success(addressData);
         }

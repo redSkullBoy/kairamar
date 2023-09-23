@@ -5,5 +5,5 @@ namespace Infrastructure.Interfaces.Services;
 
 public interface IDataRefineService
 {
-    Task<Result<AddressDataDto>> AddressAutoFillingAsync(string text);
+    Task<Result<List<AddressDataDto>>> AddressAutoFillingAsync(string text);
 }

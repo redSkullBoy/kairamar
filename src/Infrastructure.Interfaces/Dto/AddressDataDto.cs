@@ -2,6 +2,8 @@
 
 public class AddressDataDto
 {
+    public string Note { get; set; } = string.Empty;
+
     public string PostalCode { get; set; } = string.Empty;
 
     public string Country { get; set; } = string.Empty;
