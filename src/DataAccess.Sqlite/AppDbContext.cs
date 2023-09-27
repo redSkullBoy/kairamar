@@ -8,7 +8,11 @@ namespace DataAccess.Sqlite;
 public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options) { }
+            : base(options) 
+    {
+        //Database.EnsureDeleted();   // удаляем бд со старой схемой
+        //Database.EnsureCreated();   // создаем бд с новой схемой
+    }
 
     public DbSet<Address> Addresses => Set<Address>();
 

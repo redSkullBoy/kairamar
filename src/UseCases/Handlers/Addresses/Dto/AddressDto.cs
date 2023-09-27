@@ -1,7 +1,9 @@
-﻿namespace Infrastructure.Interfaces.Dto;
+﻿namespace UseCases.Handlers.Addresses.Dto;
 
-public class AddressDataDto
+public class AddressDto
 {
+    public int Id { get; set; }
+
     public string Note { get; set; } = string.Empty;
 
     public string PostalCode { get; set; } = string.Empty;
@@ -117,6 +119,8 @@ public class AddressDataDto
     public string PostalBox { get; set; } = string.Empty;
 
     public string FiasId { get; set; } = string.Empty;
+
+    public string FiasCode { get; set; } = string.Empty;
 
     public string FiasLevel { get; set; } = string.Empty;
 

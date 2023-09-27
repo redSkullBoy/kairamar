@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Sqlite.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230921121253_mig210920231512")]
-    partial class mig210920231512
+    [Migration("20230927192401_mig270920232221")]
+    partial class mig270920232221
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -89,10 +89,139 @@ namespace DataAccess.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Area")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AreaFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AreaKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AreaType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AreaTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AreaWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BeltwayDistance")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BeltwayHit")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Block")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BlockType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BlockTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CapitalMarker")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityArea")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictArea")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrictWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CountryIsoCode")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FiasActualityState")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FiasLevel")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Flat")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FlatArea")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FlatPrice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FlatType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FlatTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GeoLat")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GeoLon")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("House")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HouseFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HouseKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HouseType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HouseTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("KladrId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("LastModified")
@@ -101,8 +230,107 @@ namespace DataAccess.Sqlite.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Name")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Okato")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Oktmo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalBox")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Qc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QcComplete")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QcGeo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QcHouse")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionIsoCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegionWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Settlement")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SettlementFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SettlementKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SettlementType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SettlementTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SettlementWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SquareMeterPrice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetFiasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetKladrId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetTypeFull")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetWithType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TaxOffice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TaxOfficeLegal")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Timezone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UnparsedParts")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

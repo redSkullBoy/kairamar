@@ -1,19 +1,20 @@
 ﻿using Endpoints.Register;
 using Microsoft.Extensions.Logging;
 using FastEndpoints;
-using Infrastructure.Interfaces.Services;
+using MediatR;
+using UseCases.Handlers.Addresses.Commands;
 
 namespace Endpoints.Address;
 
 public class AutoFillingEndpoint : Endpoint<AutoFillingRequest, IEnumerable<string>>
 {
     private readonly ILogger<RegisterEndpoint> _logger;
-    private readonly IDataRefineService _dataRefineService;
+    private readonly IMediator _mediator;
 
-    public AutoFillingEndpoint(ILogger<RegisterEndpoint> logger, IDataRefineService dataRefineService)
+    public AutoFillingEndpoint(ILogger<RegisterEndpoint> logger, IMediator mediator)
     {
         _logger = logger;
-        _dataRefineService = dataRefineService;
+        _mediator = mediator;
     }
 
     public override void Configure()
@@ -24,7 +25,7 @@ public class AutoFillingEndpoint : Endpoint<AutoFillingRequest, IEnumerable<stri
 
     public override async Task HandleAsync(AutoFillingRequest request, CancellationToken cancellationToken)
     {
-        var result = await _dataRefineService.AddressAutoFillingAsync(request.Text);
+        var result = await _mediator.Send(new AutoFillingCommand { Text = request.Text }, cancellationToken);
 
         if (result.IsSuccess) 
         {
