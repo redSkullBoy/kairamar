@@ -1,4 +1,4 @@
-﻿using Domain.Entities.AppDb;
+﻿using Domain.Entities.Model;
 using Infrastructure.Interfaces.DataAccess;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
     }
 
     public DbSet<Address> Addresses => Set<Address>();
-
-    public DbSet<Email> Emails => Set<Email>();
+    public DbSet<Trip> Trips => Set<Trip>();
+    public DbSet<TripCompanion> TripCompanions => Set<TripCompanion>();
+    public DbSet<AnotherAccount> AnotherAccounts => Set<AnotherAccount>();
 }

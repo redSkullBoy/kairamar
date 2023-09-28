@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Domain.Entities.AppDb;
+using Domain.Entities.Model;
 using Infrastructure.Interfaces.Dto;
 using UseCases.Handlers.Addresses.Dto;
 

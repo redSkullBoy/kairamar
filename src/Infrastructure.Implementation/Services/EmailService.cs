@@ -1,4 +1,4 @@
-﻿using Domain.Entities.AppDb;
+﻿using Domain.Entities.Model;
 using Infrastructure.Interfaces.DataAccess;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
@@ -15,12 +15,12 @@ internal class EmailService : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string body)
     {
-        var newMail = new Email
-        {
-            Address = email,
-            Subject = subject,
-            Body = body
-        };
+        //var newMail = new Email
+        //{
+        //    Address = email,
+        //    Subject = subject,
+        //    Body = body
+        //};
 
         //_dbContext.Emails.Add(newMail);
 

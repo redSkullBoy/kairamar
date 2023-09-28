@@ -1,4 +1,4 @@
-﻿using Domain.Entities.AppDb;
+﻿using Domain.Entities.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Interfaces.DataAccess;
@@ -6,7 +6,9 @@ namespace Infrastructure.Interfaces.DataAccess;
 public interface IDbContext
 {
     DbSet<Address> Addresses { get; }
-    DbSet<Email> Emails { get; }
+    DbSet<Trip> Trips { get; }
+    DbSet<TripCompanion> TripCompanions { get; }
+    DbSet<AnotherAccount> AnotherAccounts { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

@@ -1,6 +1,6 @@
 ﻿using Ardalis.Result;
 using AutoMapper;
-using Domain.Entities.AppDb;
+using Domain.Entities.Model;
 using Infrastructure.Interfaces.DataAccess;
 using Infrastructure.Interfaces.Dto;
 using Infrastructure.Interfaces.Services;

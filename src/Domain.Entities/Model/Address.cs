@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Common;
 
-namespace Domain.Entities.AppDb;
+namespace Domain.Entities.Model;
 
 public class Address : BaseAuditableEntity
 {
