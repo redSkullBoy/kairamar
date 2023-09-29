@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Entities.Model;
 using Infrastructure.Interfaces.Dto;
-using UseCases.Handlers.Addresses.Dto;
 
 namespace UseCases.Handlers.Addresses.Mappings;
 

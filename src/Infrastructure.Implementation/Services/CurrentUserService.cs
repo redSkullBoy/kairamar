@@ -4,7 +4,7 @@ namespace Infrastructure.Implementation.Services;
 
 internal class CurrentUserService : ICurrentUserService
 {
-    public int Id => throw new NotImplementedException();
+    public string Id => throw new NotImplementedException();
 
     public bool IsAuthenticated => throw new NotImplementedException();
 

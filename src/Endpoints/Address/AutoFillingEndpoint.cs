@@ -1,5 +1,4 @@
-﻿using Endpoints.Register;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using FastEndpoints;
 using MediatR;
 using UseCases.Handlers.Addresses.Commands;
@@ -8,10 +7,10 @@ namespace Endpoints.Address;
 
 public class AutoFillingEndpoint : Endpoint<AutoFillingRequest, IEnumerable<string>>
 {
-    private readonly ILogger<RegisterEndpoint> _logger;
+    private readonly ILogger<AutoFillingEndpoint> _logger;
     private readonly IMediator _mediator;
 
-    public AutoFillingEndpoint(ILogger<RegisterEndpoint> logger, IMediator mediator)
+    public AutoFillingEndpoint(ILogger<AutoFillingEndpoint> logger, IMediator mediator)
     {
         _logger = logger;
         _mediator = mediator;

@@ -18,6 +18,8 @@ public class InfrastructureModule : Module
         services.Configure<DadataRefineConfiguration>(Configuration!.GetSection("DadataRefineConfiguration"));
         services.AddTransient<IDataRefineService, DadataRefineService>();
 
+        services.AddTransient<IDateTime, DateTimeService>();
+
         //services.AddTransient<SendEmailsJob>();
 
         //services.Configure<EmailOptions>(Configuration.GetSection("EmailOptions"));
