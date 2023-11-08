@@ -27,7 +27,7 @@ public class RegisterEndpoint : Endpoint<RegisterRequest, RegisterResponse>
 
     public override void Configure()
     {
-        Get("api/auth/register");
+        Get("register");
         AllowAnonymous();
     }
 

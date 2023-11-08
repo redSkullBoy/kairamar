@@ -10,12 +10,12 @@ public class CreateTripDto
 
     public string Locale { get; set; } = string.Empty;
 
-    public DateTime? StartDateLocal { get; set; }
-    public DateTime? EndDateLocal { get; set; }
+    public DateTime? StartDateLocal { get; set; } = DateTime.Now;
+    public DateTime? EndDateLocal { get; set; } = DateTime.Now.AddHours(1);
 
     public int RequestedSeats { get; set; }
 
-    public int RadiusInMeters { get; set; } = 5000;
+    public int? RadiusInMeters { get; set; } = 5000;
 
     public string Description { get; set; } = string.Empty;
 

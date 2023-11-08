@@ -15,12 +15,16 @@ public class AppEndpoint<TRequest, TResponse> : Endpoint<TRequest, TResponse> wh
         }
     }
 
-    public async Task ResultToSendAsync(Result<TResponse> result)
+    public async Task ResultToSendAsync(IResult result)
     {
         switch (result.Status)
         {
             case ResultStatus.Ok:
-                await SendOkAsync(result.Value);
+                if (typeof(Result).IsInstanceOfType(result))
+                    await SendOkAsync();
+                else
+                    await SendOkAsync((TResponse)result.GetValue());
+
                 break;
             case ResultStatus.NotFound:
                 await SendNotFoundAsync();
@@ -32,20 +36,16 @@ public class AppEndpoint<TRequest, TResponse> : Endpoint<TRequest, TResponse> wh
                 await SendForbiddenAsync();
                 break;
             case ResultStatus.Invalid:
-                {
-                    foreach (var error in result.ValidationErrors)
-                    {
-                        AddError(error.ErrorMessage, error.Identifier);
-                    }
+                result.ValidationErrors.ForEach(e =>
+                    ValidationFailures.Add(new(e.Identifier, e.ErrorMessage)));
 
-                    await SendErrorsAsync();
-                    break;
-                }
+                await HttpContext.Response.SendErrorsAsync(ValidationFailures);
+                break;
             case ResultStatus.Error:
                 {
                     foreach (var error in result.Errors)
                     {
-                        ThrowError(error);
+                        AddError(error);
                     }
 
                     await SendErrorsAsync();
@@ -54,7 +54,7 @@ public class AppEndpoint<TRequest, TResponse> : Endpoint<TRequest, TResponse> wh
             case ResultStatus.Conflict:
                 foreach (var error in result.Errors)
                 {
-                    ThrowError(error);
+                    AddError(error);
                 }
 
                 await SendErrorsAsync(409);

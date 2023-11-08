@@ -21,7 +21,7 @@ public class CreateEndpoint : AppEndpoint<CreateTripDto, TripDto>
 
     public override void Configure()
     {
-        Post("api/trip");
+        Post("trip");
         AllowAnonymous();
     }
 
@@ -29,7 +29,7 @@ public class CreateEndpoint : AppEndpoint<CreateTripDto, TripDto>
     {
         if (dto == null)
         {
-            ThrowError("в запросе нет данных");
+            AddError("в запросе нет данных");
             await SendErrorsAsync();
             return;
         }

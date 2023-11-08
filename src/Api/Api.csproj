@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApplicationServices.Implementation\ApplicationServices.Implementation.csproj" />
     <ProjectReference Include="..\DataAccess.Sqlite\DataAccess.Sqlite.csproj" />
     <ProjectReference Include="..\Endpoints\Endpoints.csproj" />
     <ProjectReference Include="..\Infrastructure.Implementation\Infrastructure.Implementation.csproj" />

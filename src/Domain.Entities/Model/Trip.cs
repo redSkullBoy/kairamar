@@ -26,4 +26,6 @@ public class Trip : BaseAuditableEntity
 
     public string InitiatorId { get; set; } = string.Empty;
     public AppUser? Initiator { get; set; }
+
+    public TripPassenger? TripPassenger { get; set; }
 }

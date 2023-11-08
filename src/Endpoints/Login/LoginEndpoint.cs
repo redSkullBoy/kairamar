@@ -1,16 +1,17 @@
 ﻿using DataAccess.Sqlite;
+using Endpoints.Auth;
 using FastEndpoints;
 using Infrastructure.Interfaces.DataAccess;
 using Microsoft.AspNetCore.Identity;
 
-namespace Endpoints.Auth;
+namespace Endpoints.Login;
 
-public class AuthenticateEndpoint : Endpoint<AuthenticateRequest, AuthenticateResponse>
+public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
 {
     private readonly SignInManager<AppUser> _signInManager;
     private readonly ITokenClaimsService _tokenClaimsService;
 
-    public AuthenticateEndpoint(SignInManager<AppUser> signInManager, ITokenClaimsService tokenClaimsService)
+    public LoginEndpoint(SignInManager<AppUser> signInManager, ITokenClaimsService tokenClaimsService)
     {
         _signInManager = signInManager;
         _tokenClaimsService = tokenClaimsService;
@@ -18,11 +19,12 @@ public class AuthenticateEndpoint : Endpoint<AuthenticateRequest, AuthenticateRe
 
     public override void Configure()
     {
-        Get("api/authenticate");
+        Get("login");
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(AuthenticateRequest request, CancellationToken cancellationToken)
+
+    public override async Task HandleAsync(LoginRequest request, CancellationToken cancellationToken)
     {
         if(request.Username is null)
         {
@@ -39,7 +41,7 @@ public class AuthenticateEndpoint : Endpoint<AuthenticateRequest, AuthenticateRe
             return;
         }
 
-        var response = new AuthenticateResponse();
+        var response = new LoginResponse();
         var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, true);
 
         if (result.Succeeded)

@@ -4,6 +4,7 @@ using Utils.Modules;
 using UseCases;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using ApplicationServices.Implementation;
 
 namespace Api;
 
@@ -15,6 +16,7 @@ public class Program
         // Add project modules
         builder.Services.RegisterModule<DataAccessModule>(builder.Configuration);
         builder.Services.RegisterModule<InfrastructureModule>(builder.Configuration);
+        builder.Services.RegisterModule<ApplicationServicesModule>(builder.Configuration);
         builder.Services.RegisterModule<UseCasesModule>(builder.Configuration);
 
         //builder.Services.AddAutoMapper(typeof(OrdersAutoMapperProfile));

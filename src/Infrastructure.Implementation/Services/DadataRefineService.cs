@@ -1,9 +1,11 @@
 ﻿using Ardalis.Result;
 using Dadata;
+using Domain.Entities.Enum;
 using Infrastructure.Interfaces.Configurations;
 using Infrastructure.Interfaces.Dto;
 using Infrastructure.Interfaces.Services;
 using Microsoft.Extensions.Options;
+using Utils.Extensions;
 
 namespace Infrastructure.Implementation.Services;
 
@@ -16,16 +18,16 @@ public class DadataRefineService : IDataRefineService
         _config = options;
     }
 
-    public async Task<Result<List<AddressDataDto>>> AddressAutoFillingAsync(string text)
+    public async Task<Result<IList<AddressDataDto>>> AddressAutoFillingAsync(string text, CancellationToken ctn)
     {
-        var addressData = new List<AddressDataDto>();
+        IList<AddressDataDto> addressData = new List<AddressDataDto>();
 
         var response = new Dadata.Model.SuggestResponse<Dadata.Model.Address>();
 
         try
         {
             var api = new SuggestClientAsync(_config.Value.Token);
-            response = await api.SuggestAddress(text);
+            response = await api.SuggestAddress(text, 5, ctn);
         } 
         catch (Exception ex)
         {
@@ -95,7 +97,7 @@ public class DadataRefineService : IDataRefineService
                     FlatPrice = suggest.data.flat_price,
                     PostalBox = suggest.data.postal_box,
                     FiasId = suggest.data.fias_id,
-                    FiasLevel = suggest.data.fias_level,
+                    FiasLevel = suggest.data.fias_level.ToEnum<LocationTypeEnum>(),
                     FiasActualityState = suggest.data.fias_actuality_state,
                     KladrId = suggest.data.kladr_id,
                     CapitalMarker = suggest.data.capital_marker,

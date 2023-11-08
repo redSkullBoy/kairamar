@@ -1,7 +1,13 @@
-﻿namespace Infrastructure.Interfaces.Dto;
+﻿using Domain.Entities.Enum;
+
+namespace Infrastructure.Interfaces.Dto;
 
 public class AddressDataDto
 {
+    public string FiasId { get; set; } = string.Empty;
+
+    public LocationTypeEnum FiasLevel { get; set; }
+
     public string Note { get; set; } = string.Empty;
 
     public string PostalCode { get; set; } = string.Empty;
@@ -115,10 +121,6 @@ public class AddressDataDto
     public string FlatPrice { get; set; } = string.Empty;
 
     public string PostalBox { get; set; } = string.Empty;
-
-    public string FiasId { get; set; } = string.Empty;
-
-    public string FiasLevel { get; set; } = string.Empty;
 
     public string FiasActualityState { get; set; } = string.Empty;
 

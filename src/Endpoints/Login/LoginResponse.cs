@@ -1,6 +1,6 @@
 ﻿namespace Endpoints.Auth;
 
-public class AuthenticateResponse
+public class LoginResponse
 {
     public bool Result { get; set; } = false;
     public string? Token { get; set; } = null;

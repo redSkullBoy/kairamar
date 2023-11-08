@@ -1,8 +1,9 @@
-﻿using FluentValidation;
+﻿using Ardalis.Result;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using UseCases.Handlers.Trips.Commands;
 using UseCases.Handlers.Trips.Dto;
+using UseCases.Handlers.Trips.Queries;
 
 namespace Endpoints.Trip;
 
@@ -21,7 +22,7 @@ public class AllEndpoint : AppEndpoint<TripFilter, List<TripDto>>
 
     public override void Configure()
     {
-        Get("api/trip");
+        Get("trip");
         AllowAnonymous();
     }
 
@@ -29,7 +30,7 @@ public class AllEndpoint : AppEndpoint<TripFilter, List<TripDto>>
     {
         if (filter == null)
         {
-            ThrowError("в запросе нет данных");
+            AddError("в запросе нет данных");
             await SendErrorsAsync();
             return;
         }
@@ -43,9 +44,11 @@ public class AllEndpoint : AppEndpoint<TripFilter, List<TripDto>>
             return;
         }
 
-        //var result = await _mediator.Send(new CreateCommand { Value = dto }, cancellationToken);
+        var resultGetAll = await _mediator.Send(new GetAllRequest { Value = filter }, cancellationToken);
 
-        //await ResultToSendAsync(result);
+        var result = resultGetAll.Map(s => new List<TripDto>(s.Value));
+
+        await ResultToSendAsync(result);
 
         return;
     }

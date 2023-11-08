@@ -18,7 +18,7 @@ public class AutoFillingEndpoint : Endpoint<AutoFillingRequest, IEnumerable<stri
 
     public override void Configure()
     {
-        Get("api/address/auto-filling");
+        Get("address/auto-filling");
         AllowAnonymous();
     }
 

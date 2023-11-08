@@ -1,9 +1,14 @@
 ﻿using Domain.Entities.Common;
+using Domain.Entities.Enum;
 
 namespace Domain.Entities.Model;
 
 public class Address : BaseAuditableEntity
 {
+    public string FiasId { get; set; } = default!;
+
+    public LocationTypeEnum FiasLevel { get; set; }
+
     public string? Note { get; set; }
 
     public string? PostalCode { get; set; }
@@ -118,10 +123,6 @@ public class Address : BaseAuditableEntity
 
     public string? PostalBox { get; set; }
 
-    public string? FiasId { get; set; }
-
-    public string? FiasLevel { get; set; }
-
     public string? FiasActualityState { get; set; }
 
     public string? KladrId { get; set; }
@@ -138,8 +139,14 @@ public class Address : BaseAuditableEntity
 
     public string? Timezone { get; set; }
 
+    /// <summary>
+    /// Широта
+    /// </summary>
     public string? GeoLat { get; set; }
 
+    /// <summary>
+    /// Долгота
+    /// </summary>
     public string? GeoLon { get; set; }
 
     public string? BeltwayHit { get; set; }

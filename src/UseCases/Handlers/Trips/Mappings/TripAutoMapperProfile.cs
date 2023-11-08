@@ -10,7 +10,7 @@ public class TripAutoMapperProfile : Profile
     {
         CreateMap<CreateTripDto, Trip>()
             ;
-        CreateMap<Trip, TripDto>()
+        CreateMap<Trip, TripDto>().ReverseMap()
             ;
     }
 }
