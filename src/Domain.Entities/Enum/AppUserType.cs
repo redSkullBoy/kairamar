@@ -2,6 +2,13 @@
 
 public enum AppUserType
 {
-    Companions = 0,
+    /// <summary>
+    /// Попутчик
+    /// </summary>
+    Companion = 0,
+
+    /// <summary>
+    /// Водитель
+    /// </summary>
     Initiator = 1,
 }
