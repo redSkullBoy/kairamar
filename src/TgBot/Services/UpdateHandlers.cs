@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using BotTelegramEndpoints;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -15,12 +16,14 @@ public class UpdateHandlers
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<UpdateHandlers> _logger;
     private readonly IOptions<BotConfiguration> _botConfig;
+    private readonly CallbackQueryContext _callbackQueryContext;
 
-    public UpdateHandlers(ITelegramBotClient botClient, ILogger<UpdateHandlers> logger, IOptions<BotConfiguration> botConfiguration)
+    public UpdateHandlers(ITelegramBotClient botClient, ILogger<UpdateHandlers> logger, IOptions<BotConfiguration> botConfiguration, CallbackQueryContext callbackQuery)
     {
         _botClient = botClient;
         _logger = logger;
         _botConfig = botConfiguration;
+        _callbackQueryContext = callbackQuery;
     }
 
     public Task HandleErrorAsync(Exception exception, CancellationToken cancellationToken)
@@ -84,9 +87,7 @@ public class UpdateHandlers
         Message sentMessage = null;
 
         if (useCases.TryGetValue(messageText.Split(' ')[0], out var keyboard))
-        {
             sentMessage = await keyboard.Run(message, cancellationToken);
-        }
         else
             sentMessage = await Usage(_botClient, message, cancellationToken);
 
@@ -115,15 +116,10 @@ public class UpdateHandlers
     {
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
-        await _botClient.AnswerCallbackQueryAsync(
-            callbackQueryId: callbackQuery.Id,
-            text: $"Received {callbackQuery.Data}",
-            cancellationToken: cancellationToken);
+        if (callbackQuery.Data is not { } dataCommand)
+            return;
 
-        await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id,
-            text: $"Received {callbackQuery.Data}",
-            cancellationToken: cancellationToken);
+        await _callbackQueryContext.HandleAsync(callbackQuery, cancellationToken);
     }
 
     #region Inline Mode

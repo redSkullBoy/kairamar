@@ -1,9 +1,14 @@
 using Ardalis.Result;
+using BotTelegramEndpoints;
+using BotTelegramEndpoints.Endpoint;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TgBot.Endpoints.Initiator;
 using TgBot.Services;
+using BotTelegramEndpoints.Main;
+using System.Reflection;
 
 namespace TgBot;
 
@@ -27,8 +32,12 @@ public class Program
                     return new TelegramBotClient(options, httpClient);
                 });
 
-        // Dummy business-logic service
+        // business-logic service
         builder.Services.AddScoped<UpdateHandlers>();
+        //
+
+        builder.Services.AddBotEndpoints();
+        builder.Services.AddSingleton<StartEndpoint>();
 
         builder.Services.AddHostedService<ConfigureWebhook>();
 
@@ -37,6 +46,16 @@ public class Program
                 .AddNewtonsoftJson();
 
         var app = builder.Build();
+
+        var callback = app.Services.GetService<CallbackQueryContext>();
+
+
+        // Получаем текущую сборку (или другие сборки, если требуется)
+        var assembly = Assembly.GetExecutingAssembly();
+
+        callback!.RegisterEndpoint(typeof(StartEndpoint), assembly);
+
+        app.UseBotEndpoints();
 
         app.UseStaticFiles();
 

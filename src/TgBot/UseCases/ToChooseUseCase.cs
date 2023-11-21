@@ -25,8 +25,8 @@ public class ToChooseUseCase : BaseUseCase
                     // first row
                     new []
                     {
-                        InlineKeyboardButton.WithCallbackData("Водитель", "11"),
-                        InlineKeyboardButton.WithCallbackData("Попутчик", "12"),
+                        InlineKeyboardButton.WithCallbackData("Водитель", "userIsInitiator"),
+                        InlineKeyboardButton.WithCallbackData("Попутчик", "userIsCompanion"),
                     },
                 });
 
