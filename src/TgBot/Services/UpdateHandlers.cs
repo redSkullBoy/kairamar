@@ -16,14 +16,14 @@ public class UpdateHandlers
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<UpdateHandlers> _logger;
     private readonly IOptions<BotConfiguration> _botConfig;
-    private readonly CallbackQueryContext _callbackQueryContext;
+    private readonly ReceivedContext _receivedContext;
 
-    public UpdateHandlers(ITelegramBotClient botClient, ILogger<UpdateHandlers> logger, IOptions<BotConfiguration> botConfiguration, CallbackQueryContext callbackQuery)
+    public UpdateHandlers(ITelegramBotClient botClient, ILogger<UpdateHandlers> logger, IOptions<BotConfiguration> botConfiguration, ReceivedContext receivedContext)
     {
         _botClient = botClient;
         _logger = logger;
         _botConfig = botConfiguration;
-        _callbackQueryContext = callbackQuery;
+        _receivedContext = receivedContext;
     }
 
     public Task HandleErrorAsync(Exception exception, CancellationToken cancellationToken)
@@ -40,6 +40,8 @@ public class UpdateHandlers
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
     {
+        var r = await _receivedContext.HandleAsync(update, cancellationToken);
+
         var handler = update switch
         {
             // UpdateType.Unknown:
