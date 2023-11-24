@@ -1,7 +1,7 @@
-﻿using BotTelegramEndpoints.Endpoint;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgBot.BotEndpoints.Endpoints;
 
 namespace TgBot.Endpoints.Initiator;
 
@@ -13,7 +13,7 @@ public class StartEndpoint : CallbackQueryEndpoint
 
     public override void Configure()
     {
-        Route("userIsInitiator");
+        Routes("userIsInitiator");
     }
 
     public override async Task<Message> HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)

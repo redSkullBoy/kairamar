@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace BotTelegramEndpoints.Endpoint
+namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class CallbackQueryEndpoint : BaseEndpoint<CallbackQuery>
     {

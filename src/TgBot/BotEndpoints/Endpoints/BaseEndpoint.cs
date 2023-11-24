@@ -1,11 +1,8 @@
-﻿using System.Threading.Tasks;
-using System.Threading;
-using System;
-using BotTelegramEndpoints.Endpoint.Auxiliary;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using TgBot.BotEndpoints.Endpoints.Auxiliary;
 
-namespace BotTelegramEndpoints.Endpoint
+namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class BaseEndpoint<TRequest> where TRequest : notnull
     {
@@ -40,11 +37,6 @@ namespace BotTelegramEndpoints.Endpoint
         /// </summary>
         protected virtual void Routes(params string[] patterns)
             => Definition.Routes = patterns;
-
-        public virtual void Route(string pattern)
-        {
-            Definition.Routes = new string[] { pattern };
-        }
     }
 }
 

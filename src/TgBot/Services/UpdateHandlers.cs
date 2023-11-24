@@ -1,10 +1,10 @@
-﻿using BotTelegramEndpoints;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgBot.BotEndpoints.Receiveds;
 using TgBot.Extensions;
 using TgBot.Keyboard;
 using TgBot.UseCases;
@@ -40,25 +40,23 @@ public class UpdateHandlers
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
     {
-        var r = await _receivedContext.HandleAsync(update, cancellationToken);
+        var handlerContext = await _receivedContext.HandleAsync(update, cancellationToken);
 
-        var handler = update switch
-        {
-            // UpdateType.Unknown:
-            // UpdateType.ChannelPost:
-            // UpdateType.EditedChannelPost:
-            // UpdateType.ShippingQuery:
-            // UpdateType.PreCheckoutQuery:
-            // UpdateType.Poll:
-            { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
-            { EditedMessage: { } message } => BotOnMessageReceived(message, cancellationToken),
-            { CallbackQuery: { } callbackQuery } => BotOnCallbackQueryReceived(callbackQuery, cancellationToken),
-            { InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery, cancellationToken),
-            { ChosenInlineResult: { } chosenInlineResult } => BotOnChosenInlineResultReceived(chosenInlineResult, cancellationToken),
-            _ => UnknownUpdateHandlerAsync(update, cancellationToken)
-        };
-
-        await handler;
+        //var handler = update switch
+        //{
+        //    // UpdateType.Unknown:
+        //    // UpdateType.ChannelPost:
+        //    // UpdateType.EditedChannelPost:
+        //    // UpdateType.ShippingQuery:
+        //    // UpdateType.PreCheckoutQuery:
+        //    // UpdateType.Poll:
+        //    { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
+        //    { EditedMessage: { } message } => BotOnMessageReceived(message, cancellationToken),
+        //    { CallbackQuery: { } callbackQuery } => BotOnCallbackQueryReceived(callbackQuery, cancellationToken),
+        //    { InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery, cancellationToken),
+        //    { ChosenInlineResult: { } chosenInlineResult } => BotOnChosenInlineResultReceived(chosenInlineResult, cancellationToken),
+        //    _ => UnknownUpdateHandlerAsync(update, cancellationToken)
+        //};
     }
 
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
@@ -121,7 +119,6 @@ public class UpdateHandlers
         if (callbackQuery.Data is not { } dataCommand)
             return;
 
-        await _callbackQueryContext.HandleAsync(callbackQuery, cancellationToken);
     }
 
     #region Inline Mode

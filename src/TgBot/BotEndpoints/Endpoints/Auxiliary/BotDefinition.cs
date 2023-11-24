@@ -1,4 +1,4 @@
-﻿namespace BotTelegramEndpoints.Endpoint.Auxiliary
+﻿namespace TgBot.BotEndpoints.Endpoints.Auxiliary
 {
     /// <summary>
     /// represents the configuration settings of an endpoint
