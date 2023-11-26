@@ -16,9 +16,9 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
         Routes("userIsInitiator");
     }
 
-    public override async Task<Message> HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        const string text = "Вы стали водителем. Можете использовать следующие функции:\n";
+        const string text = "Поздравляю вы стали водителем. Можете использовать следующие функции:\n";
 
         InlineKeyboardMarkup inlineKeyboard = new(
                 new[]
@@ -26,12 +26,17 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
                     // first row
                     new []
                     {
-                        InlineKeyboardButton.WithCallbackData("Мои поездки", "myTrip"),
+                        InlineKeyboardButton.WithCallbackData("Активные поездки", "activeTrips"),
                         InlineKeyboardButton.WithCallbackData("Создать поездку", "addTrip"),
+                        InlineKeyboardButton.WithCallbackData("Мои поездки", "myTrips"),
                     },
                 });
 
-        return await BotClient.SendTextMessageAsync(
+        await BotClient.AnswerCallbackQueryAsync(
+            callbackQueryId: callbackQuery.Id,
+            cancellationToken: cancellationToken);
+
+        await BotClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
             replyMarkup: inlineKeyboard,

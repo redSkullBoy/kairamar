@@ -64,6 +64,7 @@ public static class MainExtensions
         where TBotType : notnull
     {
         var regEndpoints = new Dictionary<string, Type>();
+        var userStatesEndpoints = new Dictionary<Type, string>();
         var botClient = app.ApplicationServices.GetRequiredService<ITelegramBotClient>();
 
         var queryReceivedStrategy = app.ApplicationServices.GetRequiredService<TStrategy>();
@@ -84,6 +85,14 @@ public static class MainExtensions
                 regEndpoints.Add(route, endpointService.GetType());
             }
 
+            #region UserStates
+            var userState = endpointService.Definition.UserState;
+
+            if (userState != null)
+            {
+                userStatesEndpoints.Add(endpointService.GetType(), userState);
+            }
+            #endregion
         }
 
         queryReceivedStrategy.Register(regEndpoints);

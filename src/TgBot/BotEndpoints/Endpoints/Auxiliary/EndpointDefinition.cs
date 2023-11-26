@@ -5,6 +5,8 @@
     /// </summary>
     public class EndpointDefinition
     {
+        public string? UserState { get; internal set; }
+
         public string[]? Routes { get; internal set; }
     }
 }

@@ -1,37 +1,50 @@
 ﻿using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
+using TgBot.BotEndpoints.Services;
 
 namespace TgBot.BotEndpoints.Receiveds;
 
 public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 {
     private Dictionary<string, Type> _endpoints = new Dictionary<string, Type>();
+    private Dictionary<Type, string> _userStates = new();
 
     private readonly ILogger<ChosenInlineResultReceivedStrategy> _logger;
     private readonly IEnumerable<ChosenInlineResultEndpoint> _endpointServices;
+    private readonly IBotUserService _botUserService;
 
     public ChosenInlineResultReceivedStrategy(ILogger<ChosenInlineResultReceivedStrategy> logger
-        , IEnumerable<ChosenInlineResultEndpoint> endpointServices)
+        , IEnumerable<ChosenInlineResultEndpoint> endpointServices, IBotUserService botUserService)
     {
         _logger = logger;
         _endpointServices = endpointServices;
+        _botUserService = botUserService;
     }
 
-    public async Task HandleAsync(Update request, CancellationToken cancellationToken)
+    public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
-        var requestData = request.ChosenInlineResult!;
+        var requestData = update.ChosenInlineResult!;
+        var userId = update.ChosenInlineResult!.From.Id;
 
         _logger.LogInformation("Received inline result: {ChosenInlineResultId}", requestData.ResultId);
 
         if (_endpoints!.TryGetValue(requestData.Query!, out var endpoint))
         {
-            // Выберите конкретную реализацию, связанную с endpoint
-            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+            //Проверка на состояние
+            if (_userStates!.TryGetValue(endpoint, out var state))
+            {
+                var userState = _botUserService.GetUserState(userId);
 
-            await implementation.HandleAsync(requestData, cancellationToken);
+                if (userState == state)
+                {
+                    // Выберите конкретную реализацию, связанную с endpoint
+                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+
+                    await implementation.HandleAsync(requestData, cancellationToken);
+                }
+            }
         }
 
-        throw new NotImplementedException("Для такого запроса не найден Endpoint");
     }
 
     public void Register(Dictionary<string, Type> endpoints)
@@ -39,6 +52,14 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
         foreach (var endpoint in endpoints)
         {
             _endpoints.Add(endpoint.Key, endpoint.Value);
+        }
+    }
+
+    public void Register(Dictionary<Type, string> states)
+    {
+        foreach (var state in states)
+        {
+            _userStates.Add(state.Key, state.Value);
         }
     }
 }

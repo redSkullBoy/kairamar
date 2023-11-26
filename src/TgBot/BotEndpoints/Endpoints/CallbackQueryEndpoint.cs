@@ -5,6 +5,6 @@ namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class CallbackQueryEndpoint : BaseEndpoint<CallbackQuery>
     {
-
+        public CallbackQueryEndpoint() { }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints.Auxiliary;
+using TgBot.BotEndpoints.Enum;
 
 namespace TgBot.BotEndpoints.Endpoints
 {
@@ -37,6 +38,9 @@ namespace TgBot.BotEndpoints.Endpoints
         /// </summary>
         protected virtual void Routes(params string[] patterns)
             => Definition.Routes = patterns;
+
+        protected virtual void States(string state)
+            => Definition.UserState = state;
     }
 }
 
