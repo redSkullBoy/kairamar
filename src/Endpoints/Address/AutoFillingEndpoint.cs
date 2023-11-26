@@ -30,7 +30,7 @@ public class AutoFillingEndpoint : Endpoint<AutoFillingRequest, IEnumerable<stri
         {
             var res = result.Value.Select(s => s.Note);
 
-            await SendAsync(res);
+            await SendAsync(res, 200, cancellationToken);
             return;
         }
 

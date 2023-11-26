@@ -5,9 +5,9 @@ using TgBot.BotEndpoints.Endpoints;
 
 namespace TgBot.Endpoints.Initiator;
 
-public class StartEndpoint : CallbackQueryEndpoint
+public class IsInitiatorEndpoint : CallbackQueryEndpoint
 {
-    public StartEndpoint(ITelegramBotClient botClient) : base(botClient)
+    public IsInitiatorEndpoint()
     {
     }
 
@@ -31,10 +31,10 @@ public class StartEndpoint : CallbackQueryEndpoint
                     },
                 });
 
-        return await _botClient.SendTextMessageAsync(
+        return await BotClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
-            replyMarkup: new ReplyKeyboardRemove(),
+            replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
     }
 }

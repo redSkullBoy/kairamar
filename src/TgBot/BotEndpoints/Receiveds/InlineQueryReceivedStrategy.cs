@@ -3,15 +3,15 @@ using TgBot.BotEndpoints.Endpoints;
 
 namespace TgBot.BotEndpoints.Receiveds;
 
-public class CallbackQueryReceivedStrategy : IReceivedStrategy
+public class InlineQueryReceivedStrategy : IReceivedStrategy
 {
     private Dictionary<string, Type> _endpoints = new Dictionary<string, Type>();
 
-    private readonly ILogger<CallbackQueryReceivedStrategy> _logger;
-    private readonly IEnumerable<CallbackQueryEndpoint> _endpointServices;
+    private readonly ILogger<InlineQueryReceivedStrategy> _logger;
+    private readonly IEnumerable<InlineQueryEndpoint> _endpointServices;
 
-    public CallbackQueryReceivedStrategy(ILogger<CallbackQueryReceivedStrategy> logger
-        , IEnumerable<CallbackQueryEndpoint> endpointServices)
+    public InlineQueryReceivedStrategy(ILogger<InlineQueryReceivedStrategy> logger
+        , IEnumerable<InlineQueryEndpoint> endpointServices)
     {
         _logger = logger;
         _endpointServices = endpointServices;
@@ -19,19 +19,19 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
     public async Task HandleAsync(Update request, CancellationToken cancellationToken)
     {
-        var callbackQuery = request.CallbackQuery!;
+        var requestData = request.InlineQuery!;
 
-        _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
+        _logger.LogInformation("Received inline keyboard callback from: {requestDataId}", requestData.Id);
 
-        if (_endpoints!.TryGetValue(callbackQuery.Data!, out var endpoint))
+        if (_endpoints!.TryGetValue(requestData.Query!, out var endpoint))
         {
             // Выберите конкретную реализацию, связанную с endpoint
             var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
 
-            await implementation.HandleAsync(callbackQuery, cancellationToken);
+            await implementation.HandleAsync(requestData, cancellationToken);
         }
 
-        throw new NotImplementedException();
+        throw new NotImplementedException("Для такого запроса не найден Endpoint");
     }
 
     public void Register(Dictionary<string, Type> endpoints)

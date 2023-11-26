@@ -5,8 +5,6 @@ namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class CallbackQueryEndpoint : BaseEndpoint<CallbackQuery>
     {
-        public CallbackQueryEndpoint(ITelegramBotClient botClient) : base(botClient)
-        {
-        }
+
     }
 }

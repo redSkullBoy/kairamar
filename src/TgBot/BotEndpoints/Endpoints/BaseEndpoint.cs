@@ -6,16 +6,16 @@ namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class BaseEndpoint<TRequest> where TRequest : notnull
     {
-        protected readonly ITelegramBotClient _botClient;
+        public ITelegramBotClient BotClient { get; internal set; } = default!;
 
         /// <summary>
         /// gets the endpoint definition which contains all the configuration info for the endpoint
         /// </summary>
-        public BotDefinition Definition { get; internal set; } = new BotDefinition();//also for extensibility
+        public EndpointDefinition Definition { get; internal set; } = new EndpointDefinition();//also for extensibility
 
-        public BaseEndpoint(ITelegramBotClient botClient)
+        public BaseEndpoint()
         {
-            _botClient = botClient;
+            Configure();
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace TgBot.BotEndpoints.Endpoints
         /// </summary>
         /// <param name="req">the request dto</param>
         /// <param name="ct">a cancellation token</param>
-        public virtual Task<Message> HandleAsync(TRequest req, CancellationToken ct) => throw new NotImplementedException();
+        public virtual Task HandleAsync(TRequest req, CancellationToken ct) => throw new NotImplementedException();
 
         /// <summary>
         /// use this method to configure how the endpoint should be listening to incoming requests.

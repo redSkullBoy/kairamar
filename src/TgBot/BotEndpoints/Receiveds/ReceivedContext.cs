@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TgBot.BotEndpoints.Receiveds;
@@ -7,23 +6,32 @@ namespace TgBot.BotEndpoints.Receiveds;
 public class ReceivedContext
 {
     private readonly Dictionary<UpdateType, IReceivedStrategy> _strategies;
+    private readonly ILogger<ReceivedContext> _logger;
 
-    public ReceivedContext(MessageReceivedStrategy _messageReceivedStrategy, CallbackQueryReceivedStrategy _queryReceivedStrategy)
+    public ReceivedContext(ILogger<ReceivedContext> logger, MessageReceivedStrategy messageReceivedStrategy, CallbackQueryReceivedStrategy queryReceivedStrategy
+        , InlineQueryReceivedStrategy inlineQueryReceivedStrategy, ChosenInlineResultReceivedStrategy chosenInlineResultStrategy)
     {
         _strategies = new Dictionary<UpdateType, IReceivedStrategy>
         {
-            { UpdateType.Message , _messageReceivedStrategy },
-            { UpdateType.CallbackQuery , _queryReceivedStrategy },
+            { UpdateType.Message , messageReceivedStrategy },
+            { UpdateType.EditedMessage , messageReceivedStrategy },
+            { UpdateType.CallbackQuery , queryReceivedStrategy },
+            { UpdateType.InlineQuery , inlineQueryReceivedStrategy },
+            { UpdateType.ChosenInlineResult , chosenInlineResultStrategy },
         };
+
+        _logger = logger;
     }
 
     public async Task<Message> HandleAsync(Update update, CancellationToken cancellationToken)
     {
         if (_strategies.TryGetValue(update.Type, out var contextStrategy))
         {
-            return await contextStrategy.HandleAsync(update, cancellationToken);
+            await contextStrategy.HandleAsync(update, cancellationToken);
         }
 
-        throw new NotSupportedException($"Strategy {update} is not supported");
+        _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);
+
+        return new Message();
     }
 }

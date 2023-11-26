@@ -36,7 +36,7 @@ public class ConfigureWebhook : IHostedService
         await botClient.SetWebhookAsync(
             url: webhookAddress,
             allowedUpdates: Array.Empty<UpdateType>(),
-            //secretToken: _botConfig.SecretToken,
+            secretToken: _botConfig.SecretToken,
             cancellationToken: cancellationToken);
     }
 

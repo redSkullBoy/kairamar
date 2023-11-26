@@ -3,7 +3,7 @@
     /// <summary>
     /// represents the configuration settings of an endpoint
     /// </summary>
-    public class BotDefinition
+    public class EndpointDefinition
     {
         public string[]? Routes { get; internal set; }
     }

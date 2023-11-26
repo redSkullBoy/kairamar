@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
+using TgBot.BotEndpoints.Receiveds;
 using TgBot.Filters;
-using TgBot.Services;
 
 namespace TgBot.Controllers;
 
 public class BotController : ControllerBase
 {
     [HttpPost]
-    //[ValidateTelegramBot]
+    [ValidateTelegramBot]
     public async Task<IActionResult> Post(
         [FromBody] Update update,
-        [FromServices] UpdateHandlers handleUpdateService,
+        [FromServices] ReceivedContext receivedContext,
         CancellationToken cancellationToken)
     {
-        await handleUpdateService.HandleUpdateAsync(update, cancellationToken);
+        await receivedContext.HandleAsync(update, cancellationToken);
         return Ok();
     }
 }

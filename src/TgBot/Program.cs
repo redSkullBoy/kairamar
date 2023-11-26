@@ -25,8 +25,6 @@ public class Program
                     return new TelegramBotClient(options, httpClient);
                 });
 
-        // business-logic service
-        builder.Services.AddScoped<UpdateHandlers>();
         //BotEndpoints
         builder.Services.AddBotEndpoint();
 
