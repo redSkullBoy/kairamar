@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="BotEndpoints\Enum\" />
-    <Folder Include="Endpoints\Default\" />
     <Folder Include="Enum\" />
   </ItemGroup>
 

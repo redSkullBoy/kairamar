@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
@@ -81,10 +80,7 @@ public static class MainExtensions
             var userState = endpointService.Definition.UserState;
 
             if (routes == null && userState == null)
-                throw new ArgumentNullException(nameof(routes));
-
-            if (routes == null || routes.Any(s => s == "default"))
-                throw new Exception($"добавьте endpoint по умолчанию для всех типов сообщений");
+                throw new ArgumentNullException(nameof(userState));
 
             foreach (var route in routes.OrEmptyIfNull())
             {
@@ -98,6 +94,9 @@ public static class MainExtensions
             }
             #endregion
         }
+
+        if (!regEndpoints!.TryGetValue("default", out var endpoint))
+            throw new Exception($"добавьте endpoint по умолчанию для всех типов сообщений");
 
         queryReceivedStrategy.Register(regEndpoints);
         queryReceivedStrategy.Register(userStatesEndpoints);
