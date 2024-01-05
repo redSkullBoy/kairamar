@@ -39,6 +39,7 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
                 await implementation.HandleAsync(requestData, cancellationToken);
             }
+            return;
         }
         //Проверка на состояние
         var keyValue = _userStates!.Single(x => x.Value == userState);

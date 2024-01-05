@@ -38,6 +38,8 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
+
+            return;
         }
         //Проверка на состояние
         var keyValue = _userStates!.Single(x => x.Value == userState);

@@ -14,7 +14,12 @@ public class BotController : ControllerBase
         [FromServices] ReceivedContext receivedContext,
         CancellationToken cancellationToken)
     {
-        await receivedContext.HandleAsync(update, cancellationToken);
+        try
+        {
+            await receivedContext.HandleAsync(update, cancellationToken);
+        }
+        catch (Exception ex) { }
+
         return Ok();
     }
 }

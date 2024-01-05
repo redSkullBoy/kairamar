@@ -38,6 +38,7 @@ public class MessageReceivedStrategy : IReceivedStrategy
 
                 await implementation.HandleAsync(message, cancellationToken);
             }
+            return;
         }
         //Проверка на состояние
         var keyValue = _userStates!.Single(x => x.Value == userState);

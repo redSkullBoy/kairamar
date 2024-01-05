@@ -23,7 +23,7 @@ public class ReceivedContext
         _logger = logger;
     }
 
-    public async Task<Message> HandleAsync(Update update, CancellationToken cancellationToken)
+    public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
         if (_strategies.TryGetValue(update.Type, out var contextStrategy))
         {
@@ -31,7 +31,5 @@ public class ReceivedContext
         }
 
         _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);
-
-        return new Message();
     }
 }
