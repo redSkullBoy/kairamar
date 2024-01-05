@@ -27,7 +27,7 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
-        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        var userState = _botUserService.GetStateOrNull(update.CallbackQuery!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {
@@ -37,6 +37,17 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
 
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
+            }
+            else
+            {
+                // Для DefaultEndpoint
+                if (_endpoints!.TryGetValue("default", out var endpoint))
+                {
+                    // Выберите конкретную реализацию, связанную с endpoint
+                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+
+                    await implementation.HandleAsync(callbackQuery, cancellationToken);
+                }
             }
 
             return;

@@ -28,7 +28,7 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline result: {ChosenInlineResultId}", requestData.ResultId);
 
-        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        var userState = _botUserService.GetStateOrNull(update.ChosenInlineResult!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {

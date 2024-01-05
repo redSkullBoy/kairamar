@@ -28,7 +28,7 @@ public class InlineQueryReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline keyboard callback from: {requestDataId}", requestData.Id);
 
-        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        var userState = _botUserService.GetStateOrNull(update.InlineQuery!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {

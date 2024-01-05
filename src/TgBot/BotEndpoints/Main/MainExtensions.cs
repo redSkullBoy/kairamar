@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
@@ -44,7 +45,7 @@ public static class MainExtensions
         // Регистрируем каждый найденный тип
         foreach (var serviceType in endpoints)
         {
-            services.AddTransient(typeof(TEndpoint), serviceType);
+            services.AddSingleton(typeof(TEndpoint), serviceType);
         }
 
         return services;
@@ -79,8 +80,11 @@ public static class MainExtensions
             var routes = endpointService.Definition.Routes;
             var userState = endpointService.Definition.UserState;
 
-            if (!(routes != null || userState != null))
+            if (routes == null && userState == null)
                 throw new ArgumentNullException(nameof(routes));
+
+            if (routes == null || routes.Any(s => s == "default"))
+                throw new Exception($"добавьте endpoint по умолчанию для всех типов сообщений");
 
             foreach (var route in routes.OrEmptyIfNull())
             {
@@ -88,7 +92,6 @@ public static class MainExtensions
             }
 
             #region UserStates
-
             if (userState != null)
             {
                 userStatesEndpoints.Add(endpointService.GetType(), userState);

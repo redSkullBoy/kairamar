@@ -26,9 +26,8 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
                     // first row
                     new []
                     {
-                        InlineKeyboardButton.WithCallbackData("Активные поездки", "activeTrips"),
+                        InlineKeyboardButton.WithCallbackData("Поездки", "activeTrips"),
                         InlineKeyboardButton.WithCallbackData("Создать поездку", "addTrip"),
-                        InlineKeyboardButton.WithCallbackData("Мои поездки", "myTrips"),
                     },
                 });
 

@@ -20,7 +20,7 @@ public class StartEndpoint : MessageEndpoint
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
     {
         var unauthorizedUser = message.From ?? new User();
-        var chatUser = await BotClient.GetChatMemberAsync(message.Chat.Id, unauthorizedUser.Id);
+        //var chatUser = await BotClient.GetChatMemberAsync(message.Chat.Id, unauthorizedUser.Id);
 
         //if (chatUser == null || chatUser.Status == ChatMemberStatus.Left)
         //    return;
