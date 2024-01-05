@@ -11,10 +11,10 @@ public class InlineQueryReceivedStrategy : IReceivedStrategy
 
     private readonly ILogger<InlineQueryReceivedStrategy> _logger;
     private readonly IEnumerable<InlineQueryEndpoint> _endpointServices;
-    private readonly IBotUserService _botUserService;
+    private readonly IUserBotService _botUserService;
 
     public InlineQueryReceivedStrategy(ILogger<InlineQueryReceivedStrategy> logger
-        , IEnumerable<InlineQueryEndpoint> endpointServices, IBotUserService botUserService)
+        , IEnumerable<InlineQueryEndpoint> endpointServices, IUserBotService botUserService)
     {
         _logger = logger;
         _endpointServices = endpointServices;
@@ -28,24 +28,30 @@ public class InlineQueryReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline keyboard callback from: {requestDataId}", requestData.Id);
 
-        if (_endpoints!.TryGetValue(requestData.Query!, out var endpoint))
+        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        //если нет статуса то ищем по endpoints
+        if (string.IsNullOrWhiteSpace(userState))
         {
-            //Проверка на состояние
-            if (_userStates!.TryGetValue(endpoint, out var state))
+            if (_endpoints!.TryGetValue(requestData.Query!, out var endpointWithoutStatus))
             {
-                var userState = _botUserService.GetUserState(userId);
+                // Выберите конкретную реализацию, связанную с endpoint
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
 
-                if (userState == state)
-                {
-                    // Выберите конкретную реализацию, связанную с endpoint
-                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
-                    await implementation.HandleAsync(requestData, cancellationToken);
-                }
+                await implementation.HandleAsync(requestData, cancellationToken);
             }
         }
+        //Проверка на состояние
+        var keyValue = _userStates!.Single(x => x.Value == userState);
 
-        throw new NotImplementedException("Для такого запроса не найден Endpoint");
+        if (keyValue.Key != null)
+        {
+            // Выберите конкретную реализацию, связанную с endpoint
+            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+
+            await implementation.HandleAsync(requestData, cancellationToken);
+        }
+
+        _logger.LogInformation("Для такого запроса не найден Endpoint: {requestDataId}", requestData.Id);
     }
 
     public void Register(Dictionary<string, Type> endpoints)

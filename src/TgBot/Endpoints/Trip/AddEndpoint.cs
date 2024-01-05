@@ -2,11 +2,19 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
+using TgBot.BotEndpoints.Services;
 
 namespace TgBot.Endpoints.Trip;
 
 public class AddEndpoint : CallbackQueryEndpoint
 {
+    private readonly IUserBotService _userBotService;
+
+    public AddEndpoint(IUserBotService userBotService)
+    {
+        _userBotService = userBotService;
+    }
+
     public override void Configure()
     {
         Routes("addTrip");
@@ -38,5 +46,7 @@ public class AddEndpoint : CallbackQueryEndpoint
             text: "Введите - Пункт отправления",
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
+
+        _userBotService.SetState(callbackQuery.From.Id, "AddDeparturePoint");
     }
 }

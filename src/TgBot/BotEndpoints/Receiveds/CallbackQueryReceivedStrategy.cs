@@ -11,10 +11,10 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
     private readonly ILogger<CallbackQueryReceivedStrategy> _logger;
     private readonly IEnumerable<CallbackQueryEndpoint> _endpointServices;
-    private readonly IBotUserService _botUserService;
+    private readonly IUserBotService _botUserService;
 
     public CallbackQueryReceivedStrategy(ILogger<CallbackQueryReceivedStrategy> logger
-        , IEnumerable<CallbackQueryEndpoint> endpointServices, IBotUserService botUserService)
+        , IEnumerable<CallbackQueryEndpoint> endpointServices, IUserBotService botUserService)
     {
         _logger = logger;
         _endpointServices = endpointServices;
@@ -24,25 +24,30 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
     public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
         var callbackQuery = update.CallbackQuery!;
-        var userId = update.CallbackQuery!.From.Id;
 
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
-        if (_endpoints!.TryGetValue(callbackQuery.Data!, out var endpoint))
+        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        //если нет статуса то ищем по endpoints
+        if (string.IsNullOrWhiteSpace(userState))
         {
-            //Проверка на состояние
-            if (_userStates!.TryGetValue(endpoint, out var state))
+            if (_endpoints!.TryGetValue(callbackQuery.Data!, out var endpointWithoutStatus))
             {
-                var userState = _botUserService.GetUserState(userId);
+                // Выберите конкретную реализацию, связанную с endpoint
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
 
-                if(userState == state)
-                {
-                    // Выберите конкретную реализацию, связанную с endpoint
-                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
-                    await implementation.HandleAsync(callbackQuery, cancellationToken);
-                }
+                await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
+        }
+        //Проверка на состояние
+        var keyValue = _userStates!.Single(x => x.Value == userState);
+
+        if (keyValue.Key != null)
+        {
+            // Выберите конкретную реализацию, связанную с endpoint
+            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+
+            await implementation.HandleAsync(callbackQuery, cancellationToken);
         }
 
         _logger.LogInformation("Unknown CallbackQuery type: {MessageType}", update.Type);

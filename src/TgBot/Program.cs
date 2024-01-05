@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using TgBot.BotEndpoints.Main;
+using TgBot.BotEndpoints.Services;
 using TgBot.Services;
 
 namespace TgBot;
@@ -24,6 +25,8 @@ public class Program
                     TelegramBotClientOptions options = new(botConfig.BotToken);
                     return new TelegramBotClient(options, httpClient);
                 });
+
+        builder.Services.AddSingleton<IUserBotService, UserBotService>();
 
         //BotEndpoints
         builder.Services.AddBotEndpoint();

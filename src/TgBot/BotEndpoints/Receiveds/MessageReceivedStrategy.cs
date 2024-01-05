@@ -11,10 +11,10 @@ public class MessageReceivedStrategy : IReceivedStrategy
 
     private readonly ILogger<MessageReceivedStrategy> _logger;
     private readonly IEnumerable<MessageEndpoint> _endpointServices;
-    private readonly IBotUserService _botUserService;
+    private readonly IUserBotService _botUserService;
 
     public MessageReceivedStrategy(ILogger<MessageReceivedStrategy> logger
-        , IEnumerable<MessageEndpoint> endpointServices, IBotUserService botUserService)
+        , IEnumerable<MessageEndpoint> endpointServices, IUserBotService botUserService)
     {
         _logger = logger;
         _endpointServices = endpointServices;
@@ -24,40 +24,30 @@ public class MessageReceivedStrategy : IReceivedStrategy
     public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
         var message = update.Message!;
-        var userId = update.CallbackQuery!.From.Id;
 
         _logger.LogInformation("Receive message type: {MessageType}", message.Type);
 
-        if (_endpoints!.TryGetValue(message.Text!, out var endpoint))
+        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        //если нет статуса то ищем по endpoints
+        if (string.IsNullOrWhiteSpace(userState))
         {
-            //Проверка на состояние
-            if (_userStates!.TryGetValue(endpoint, out var state))
-            {
-                var userState = _botUserService.GetUserState(userId);
-
-                if (userState == state)
-                {
-                    // Выберите конкретную реализацию, связанную с endpoint
-                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
-                    await implementation.HandleAsync(message, cancellationToken);
-                }
-            }
-        }
-        else
-        {
-            //Проверка на состояние
-            var userState = _botUserService.GetUserState(userId);
-
-            var keyValue = _userStates!.Single(x => x.Value == message.Text!);
-
-            if (keyValue.Key != null && keyValue.Value == userState)
+            if (_endpoints!.TryGetValue(message.Text!, out var endpointWithoutStatus))
             {
                 // Выберите конкретную реализацию, связанную с endpoint
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
 
                 await implementation.HandleAsync(message, cancellationToken);
             }
+        }
+        //Проверка на состояние
+        var keyValue = _userStates!.Single(x => x.Value == userState);
+
+        if (keyValue.Key != null)
+        {
+            // Выберите конкретную реализацию, связанную с endpoint
+            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+
+            await implementation.HandleAsync(message, cancellationToken);
         }
 
         _logger.LogInformation("Unknown message type: {MessageType}", update.Type);

@@ -11,10 +11,10 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
     private readonly ILogger<ChosenInlineResultReceivedStrategy> _logger;
     private readonly IEnumerable<ChosenInlineResultEndpoint> _endpointServices;
-    private readonly IBotUserService _botUserService;
+    private readonly IUserBotService _botUserService;
 
     public ChosenInlineResultReceivedStrategy(ILogger<ChosenInlineResultReceivedStrategy> logger
-        , IEnumerable<ChosenInlineResultEndpoint> endpointServices, IBotUserService botUserService)
+        , IEnumerable<ChosenInlineResultEndpoint> endpointServices, IUserBotService botUserService)
     {
         _logger = logger;
         _endpointServices = endpointServices;
@@ -28,21 +28,27 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline result: {ChosenInlineResultId}", requestData.ResultId);
 
-        if (_endpoints!.TryGetValue(requestData.Query!, out var endpoint))
+        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
+        //если нет статуса то ищем по endpoints
+        if (string.IsNullOrWhiteSpace(userState))
         {
-            //Проверка на состояние
-            if (_userStates!.TryGetValue(endpoint, out var state))
+            if (_endpoints!.TryGetValue(requestData.Query!, out var endpointWithoutStatus))
             {
-                var userState = _botUserService.GetUserState(userId);
+                // Выберите конкретную реализацию, связанную с endpoint
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
 
-                if (userState == state)
-                {
-                    // Выберите конкретную реализацию, связанную с endpoint
-                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
-                    await implementation.HandleAsync(requestData, cancellationToken);
-                }
+                await implementation.HandleAsync(requestData, cancellationToken);
             }
+        }
+        //Проверка на состояние
+        var keyValue = _userStates!.Single(x => x.Value == userState);
+
+        if (keyValue.Key != null)
+        {
+            // Выберите конкретную реализацию, связанную с endpoint
+            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+
+            await implementation.HandleAsync(requestData, cancellationToken);
         }
 
     }

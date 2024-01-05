@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Receiveds;
+using Utils.Extensions;
 
 namespace TgBot.BotEndpoints.Main;
 
@@ -43,7 +44,7 @@ public static class MainExtensions
         // Регистрируем каждый найденный тип
         foreach (var serviceType in endpoints)
         {
-            services.AddSingleton(typeof(TEndpoint), serviceType);
+            services.AddTransient(typeof(TEndpoint), serviceType);
         }
 
         return services;
@@ -76,17 +77,17 @@ public static class MainExtensions
             endpointService.BotClient = botClient;
 
             var routes = endpointService.Definition.Routes;
+            var userState = endpointService.Definition.UserState;
 
-            if (routes == null)
+            if (!(routes != null || userState != null))
                 throw new ArgumentNullException(nameof(routes));
 
-            foreach (var route in routes)
+            foreach (var route in routes.OrEmptyIfNull())
             {
                 regEndpoints.Add(route, endpointService.GetType());
             }
 
             #region UserStates
-            var userState = endpointService.Definition.UserState;
 
             if (userState != null)
             {
@@ -96,5 +97,6 @@ public static class MainExtensions
         }
 
         queryReceivedStrategy.Register(regEndpoints);
+        queryReceivedStrategy.Register(userStatesEndpoints);
     }
 }
