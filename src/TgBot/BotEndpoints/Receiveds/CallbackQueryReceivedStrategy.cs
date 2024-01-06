@@ -47,7 +47,7 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
             return;
         }
         //Проверка на состояние
-        var keyValue = _userStates!.Single(x => x.Value == userState);
+        var keyValue = _userStates!.SingleOrDefault(x => x.Value == userState);
 
         if (keyValue.Key != null)
         {
