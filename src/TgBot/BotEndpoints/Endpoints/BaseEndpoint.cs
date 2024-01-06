@@ -5,8 +5,6 @@ namespace TgBot.BotEndpoints.Endpoints
 {
     public abstract class BaseEndpoint<TRequest> where TRequest : notnull
     {
-        public ITelegramBotClient BotClient { get; internal set; } = default!;
-
         /// <summary>
         /// gets the endpoint definition which contains all the configuration info for the endpoint
         /// </summary>

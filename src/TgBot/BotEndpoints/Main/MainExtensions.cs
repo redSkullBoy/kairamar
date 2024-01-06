@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
@@ -45,7 +44,7 @@ public static class MainExtensions
         // Регистрируем каждый найденный тип
         foreach (var serviceType in endpoints)
         {
-            services.AddSingleton(typeof(TEndpoint), serviceType);
+            services.AddScoped(typeof(TEndpoint), serviceType);
         }
 
         return services;
@@ -67,16 +66,14 @@ public static class MainExtensions
     {
         var regEndpoints = new Dictionary<string, Type>();
         var userStatesEndpoints = new Dictionary<Type, string>();
-        var botClient = app.ApplicationServices.GetRequiredService<ITelegramBotClient>();
 
         var queryReceivedStrategy = app.ApplicationServices.GetRequiredService<TStrategy>();
 
-        var endpointServices = (IEnumerable<BaseEndpoint<TBotType>>)app.ApplicationServices.GetServices(typeof(TEndpoint));
+        using var scope = app.ApplicationServices.CreateScope();
+        var endpointServices = (IEnumerable<BaseEndpoint<TBotType>>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
 
         foreach (var endpointService in endpointServices)
         {
-            endpointService.BotClient = botClient;
-
             var routes = endpointService.Definition.Routes;
             var userState = endpointService.Definition.UserState;
 

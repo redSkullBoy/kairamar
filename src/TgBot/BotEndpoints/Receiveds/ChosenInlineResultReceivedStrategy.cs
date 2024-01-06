@@ -11,14 +11,14 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
     private Dictionary<Type, string> _userStates = new();
 
     private readonly ILogger<ChosenInlineResultReceivedStrategy> _logger;
-    private readonly IEnumerable<ChosenInlineResultEndpoint> _endpointServices;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IUserBotService _botUserService;
 
     public ChosenInlineResultReceivedStrategy(ILogger<ChosenInlineResultReceivedStrategy> logger
-        , IEnumerable<ChosenInlineResultEndpoint> endpointServices, IUserBotService botUserService)
+        , IServiceScopeFactory serviceScopeFactory, IUserBotService botUserService)
     {
         _logger = logger;
-        _endpointServices = endpointServices;
+        _serviceScopeFactory = serviceScopeFactory;
         _botUserService = botUserService;
     }
 
@@ -29,19 +29,22 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline result: {ChosenInlineResultId}", requestData.ResultId);
 
+        using var scope = _serviceScopeFactory.CreateScope();
+        var endpointServices = (IEnumerable<ChosenInlineResultEndpoint>)scope.ServiceProvider.GetServices(typeof(ChosenInlineResultEndpoint));
+
         var userState = _botUserService.GetStateOrNull(update.ChosenInlineResult!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {
             if (_endpoints!.TryGetValue(requestData.Query!, out var endpointWithoutStatus))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
                 await implementation.HandleAsync(requestData, cancellationToken);
             }
             // Для DefaultEndpoint
             else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
                 await implementation.HandleAsync(requestData, cancellationToken);
             }
 
@@ -52,13 +55,13 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
         if (keyValue.Key != null)
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+            var implementation = endpointServices.First(impl => impl.GetType() == keyValue.Key);
             await implementation.HandleAsync(requestData, cancellationToken);
         }
         // Для DefaultEndpoint
         else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
             await implementation.HandleAsync(requestData, cancellationToken);
         }
     }

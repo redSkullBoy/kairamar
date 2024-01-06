@@ -7,8 +7,11 @@ namespace TgBot.Endpoints.Default;
 
 public class DefaultCallbackQueryEndpoint : CallbackQueryEndpoint
 {
-    public DefaultCallbackQueryEndpoint()
+    private readonly ITelegramBotClient _botClient;
+
+    public DefaultCallbackQueryEndpoint(ITelegramBotClient botClient)
     {
+        _botClient = botClient;
     }
 
     public override void Configure()
@@ -18,13 +21,28 @@ public class DefaultCallbackQueryEndpoint : CallbackQueryEndpoint
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        const string text = "Данная функция не добавлена\n";
+        //Поиск имени кнопки
+        string buttonText = string.Empty;
+        var inlineKeyboards = callbackQuery.Message?.ReplyMarkup?.InlineKeyboard;
 
-        await BotClient.AnswerCallbackQueryAsync(
+        foreach(var inlineKeyboard in inlineKeyboards)
+        {
+            var button = inlineKeyboard.FirstOrDefault(s => s.CallbackData == callbackQuery.Data);
+
+            if (button != null)
+            {
+                buttonText = button.Text;
+                break;
+            }
+        }
+
+        string text = $"{buttonText} - команда не найдена";
+
+        await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        await BotClient.SendTextMessageAsync(
+        await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
             cancellationToken: cancellationToken);

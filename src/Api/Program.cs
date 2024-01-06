@@ -3,7 +3,7 @@ using Infrastructure.Implementation;
 using Utils.Modules;
 using UseCases;
 using FastEndpoints;
-using FastEndpoints.Swagger;
+//using FastEndpoints.Swagger;
 using ApplicationServices.Implementation;
 
 namespace Api;
@@ -28,7 +28,7 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddFastEndpoints();
-        builder.Services.SwaggerDocument(); //add this
+        //builder.Services.SwaggerDocument(); //add this
 
         var app = builder.Build();
 
@@ -43,7 +43,7 @@ public class Program
         app.UseAuthorization();
 
         app.UseFastEndpoints();
-        app.UseSwaggerGen(); //add this
+        //app.UseSwaggerGen(); //add this
 
         app.MapControllers();
 

@@ -7,6 +7,10 @@ namespace DataAccess.Sqlite;
 
 public class AppUser : IdentityUser
 {
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
     public AppUserType Type { get; set; }
 
     public Collection<AnotherAccount>? AnotherAccounts { get; set; }

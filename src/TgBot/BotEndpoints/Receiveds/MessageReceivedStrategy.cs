@@ -11,14 +11,14 @@ public class MessageReceivedStrategy : IReceivedStrategy
     private Dictionary<Type, string> _userStates = new();
 
     private readonly ILogger<MessageReceivedStrategy> _logger;
-    private readonly IEnumerable<MessageEndpoint> _endpointServices;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IUserBotService _botUserService;
 
     public MessageReceivedStrategy(ILogger<MessageReceivedStrategy> logger
-        , IEnumerable<MessageEndpoint> endpointServices, IUserBotService botUserService)
+        , IServiceScopeFactory serviceScopeFactory, IUserBotService botUserService)
     {
         _logger = logger;
-        _endpointServices = endpointServices;
+        _serviceScopeFactory = serviceScopeFactory;
         _botUserService = botUserService;
     }
 
@@ -28,19 +28,22 @@ public class MessageReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Receive message type: {MessageType}", message.Type);
 
+        using var scope = _serviceScopeFactory.CreateScope();
+        var endpointServices = (IEnumerable<MessageEndpoint>)scope.ServiceProvider.GetServices(typeof(MessageEndpoint));
+
         var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {
             if (_endpoints!.TryGetValue(message.Text!, out var endpointWithoutStatus))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
                 await implementation.HandleAsync(message, cancellationToken);
             }
             // Для DefaultEndpoint
             else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
                 await implementation.HandleAsync(message, cancellationToken);
             }
 
@@ -51,13 +54,13 @@ public class MessageReceivedStrategy : IReceivedStrategy
 
         if (keyValue.Key != null)
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+            var implementation = endpointServices.First(impl => impl.GetType() == keyValue.Key);
             await implementation.HandleAsync(message, cancellationToken);
         }
         // Для DefaultEndpoint
         else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
             await implementation.HandleAsync(message, cancellationToken);
         }
 

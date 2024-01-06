@@ -9,10 +9,12 @@ namespace TgBot.Endpoints.Trip;
 public class AddDeparturePointEndpoint : MessageEndpoint
 {
     private readonly IUserBotService _userBotService;
+    private readonly ITelegramBotClient _botClient;
 
-    public AddDeparturePointEndpoint(IUserBotService userBotService)
+    public AddDeparturePointEndpoint(IUserBotService userBotService, ITelegramBotClient botClient)
     {
         _userBotService = userBotService;
+        _botClient = botClient;
     }
 
     public override void Configure()
@@ -22,7 +24,7 @@ public class AddDeparturePointEndpoint : MessageEndpoint
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
     {
-        await BotClient.SendTextMessageAsync(
+        await _botClient.SendTextMessageAsync(
             chatId: message!.Chat.Id,
             text: "Введите - Пункт назначения",
             replyMarkup: new ReplyKeyboardRemove(),

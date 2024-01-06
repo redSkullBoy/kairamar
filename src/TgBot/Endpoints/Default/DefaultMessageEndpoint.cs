@@ -7,8 +7,11 @@ namespace TgBot.Endpoints.Default;
 
 public class DefaultMessageEndpoint : MessageEndpoint
 {
-    public DefaultMessageEndpoint()
+    private readonly ITelegramBotClient _botClient;
+
+    public DefaultMessageEndpoint(ITelegramBotClient botClient)
     {
+        _botClient = botClient;
     }
 
     public override void Configure()
@@ -18,9 +21,9 @@ public class DefaultMessageEndpoint : MessageEndpoint
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
     {
-        const string text = "Данная функция не добавлена\n";
+        string text = $"{message.Text} - команда не распознана";
 
-        await BotClient.SendTextMessageAsync(
+        await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: text,
                         cancellationToken: cancellationToken);

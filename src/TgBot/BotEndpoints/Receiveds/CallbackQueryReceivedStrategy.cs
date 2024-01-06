@@ -11,14 +11,14 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
     private Dictionary<Type, string> _userStates = new();
 
     private readonly ILogger<CallbackQueryReceivedStrategy> _logger;
-    private readonly IEnumerable<CallbackQueryEndpoint> _endpointServices;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IUserBotService _botUserService;
 
     public CallbackQueryReceivedStrategy(ILogger<CallbackQueryReceivedStrategy> logger
-        , IEnumerable<CallbackQueryEndpoint> endpointServices, IUserBotService botUserService)
+        , IServiceScopeFactory serviceScopeFactory, IUserBotService botUserService)
     {
         _logger = logger;
-        _endpointServices = endpointServices;
+        _serviceScopeFactory = serviceScopeFactory;
         _botUserService = botUserService;
     }
 
@@ -28,19 +28,22 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", callbackQuery.Id);
 
+        using var scope = _serviceScopeFactory.CreateScope();
+        var endpointServices = (IEnumerable<CallbackQueryEndpoint>)scope.ServiceProvider.GetServices(typeof(CallbackQueryEndpoint));
+
         var userState = _botUserService.GetStateOrNull(update.CallbackQuery!.From!.Id);
         //если нет статуса то ищем по endpoints
         if (string.IsNullOrWhiteSpace(userState))
         {
             if (_endpoints!.TryGetValue(callbackQuery.Data!, out var endpointWithoutStatus))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
             // Для DefaultEndpoint
             else if(_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+                var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
 
@@ -51,13 +54,13 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
         if (keyValue.Key != null)
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
+            var implementation = endpointServices.First(impl => impl.GetType() == keyValue.Key);
             await implementation.HandleAsync(callbackQuery, cancellationToken);
         }
         // Для DefaultEndpoint
         else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
         {
-            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
             await implementation.HandleAsync(callbackQuery, cancellationToken);
         }
 

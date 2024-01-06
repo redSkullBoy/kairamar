@@ -1,8 +1,13 @@
+using ApplicationServices.Implementation;
+using DataAccess.Sqlite;
+using Infrastructure.Implementation;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using TgBot.BotEndpoints.Main;
 using TgBot.BotEndpoints.Services;
 using TgBot.Services;
+using UseCases;
+using Utils.Modules;
 
 namespace TgBot;
 
@@ -15,6 +20,11 @@ public class Program
         // Setup Bot configuration
         var botConfigurationSection = builder.Configuration.GetSection(BotConfiguration.Configuration);
         builder.Services.Configure<BotConfiguration>(botConfigurationSection);
+        // Add project modules
+        builder.Services.RegisterModule<DataAccessModule>(builder.Configuration);
+        builder.Services.RegisterModule<InfrastructureModule>(builder.Configuration);
+        builder.Services.RegisterModule<ApplicationServicesModule>(builder.Configuration);
+        builder.Services.RegisterModule<UseCasesModule>(builder.Configuration);
 
         var botConfiguration = botConfigurationSection.Get<BotConfiguration>();
 

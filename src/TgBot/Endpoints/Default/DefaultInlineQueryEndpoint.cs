@@ -7,8 +7,11 @@ namespace TgBot.Endpoints.Default;
 
 public class DefaultInlineQueryEndpoint : InlineQueryEndpoint
 {
-    public DefaultInlineQueryEndpoint()
+    private readonly ITelegramBotClient _botClient;
+
+    public DefaultInlineQueryEndpoint(ITelegramBotClient botClient)
     {
+        _botClient = botClient;
     }
 
     public override void Configure()
@@ -20,7 +23,7 @@ public class DefaultInlineQueryEndpoint : InlineQueryEndpoint
     {
         const string text = "Данная функция не добавлена\n";
 
-        await BotClient.SendTextMessageAsync(
+        await _botClient.SendTextMessageAsync(
                         chatId: inlineQuery.Id,
                         text: text,
                         cancellationToken: cancellationToken);

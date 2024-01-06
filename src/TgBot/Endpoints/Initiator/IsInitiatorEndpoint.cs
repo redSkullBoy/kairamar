@@ -7,8 +7,11 @@ namespace TgBot.Endpoints.Initiator;
 
 public class IsInitiatorEndpoint : CallbackQueryEndpoint
 {
-    public IsInitiatorEndpoint()
+    private readonly ITelegramBotClient _botClient;
+
+    public IsInitiatorEndpoint(ITelegramBotClient botClient)
     {
+        _botClient = botClient;
     }
 
     public override void Configure()
@@ -31,11 +34,11 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
                     },
                 });
 
-        await BotClient.AnswerCallbackQueryAsync(
+        await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        await BotClient.SendTextMessageAsync(
+        await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
             replyMarkup: inlineKeyboard,
