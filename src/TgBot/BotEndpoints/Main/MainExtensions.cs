@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Receiveds;
 using Utils.Extensions;
@@ -95,7 +96,7 @@ public static class MainExtensions
             #endregion
         }
 
-        if (!regEndpoints!.TryGetValue("default", out var endpoint))
+        if (!regEndpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             throw new Exception($"добавьте endpoint по умолчанию для всех типов сообщений");
 
         queryReceivedStrategy.Register(regEndpoints);

@@ -1,6 +1,7 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot;
 using TgBot.BotEndpoints.Endpoints;
+using TgBot.BotEndpoints.Constants;
 
 namespace TgBot.Endpoints.Default;
 
@@ -12,7 +13,7 @@ public class DefaultInlineQueryEndpoint : InlineQueryEndpoint
 
     public override void Configure()
     {
-        Routes("default");
+        Routes(BaseEndpointConst.DEFAULT);
     }
 
     public override async Task HandleAsync(InlineQuery inlineQuery, CancellationToken cancellationToken)

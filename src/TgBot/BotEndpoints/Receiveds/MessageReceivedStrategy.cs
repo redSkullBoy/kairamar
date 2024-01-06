@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types;
+using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
@@ -38,6 +39,15 @@ public class MessageReceivedStrategy : IReceivedStrategy
 
                 await implementation.HandleAsync(message, cancellationToken);
             }
+            // Для DefaultEndpoint
+            else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
+            {
+                // Выберите конкретную реализацию, связанную с endpoint
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+
+                await implementation.HandleAsync(message, cancellationToken);
+            }
+
             return;
         }
         //Проверка на состояние

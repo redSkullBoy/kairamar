@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types;
+using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
@@ -38,16 +39,13 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
-            else
+            // Для DefaultEndpoint
+            else if(_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                // Для DefaultEndpoint
-                if (_endpoints!.TryGetValue("default", out var endpoint))
-                {
-                    // Выберите конкретную реализацию, связанную с endpoint
-                    var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+                // Выберите конкретную реализацию, связанную с endpoint
+                var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
 
-                    await implementation.HandleAsync(callbackQuery, cancellationToken);
-                }
+                await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
 
             return;
