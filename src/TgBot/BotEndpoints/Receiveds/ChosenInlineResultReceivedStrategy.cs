@@ -35,17 +35,13 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
         {
             if (_endpoints!.TryGetValue(requestData.Query!, out var endpointWithoutStatus))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
-
                 await implementation.HandleAsync(requestData, cancellationToken);
             }
             // Для DefaultEndpoint
             else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
                 await implementation.HandleAsync(requestData, cancellationToken);
             }
 
@@ -56,12 +52,15 @@ public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
 
         if (keyValue.Key != null)
         {
-            // Выберите конкретную реализацию, связанную с endpoint
             var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
-
             await implementation.HandleAsync(requestData, cancellationToken);
         }
-
+        // Для DefaultEndpoint
+        else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
+        {
+            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
+            await implementation.HandleAsync(requestData, cancellationToken);
+        }
     }
 
     public void Register(Dictionary<string, Type> endpoints)

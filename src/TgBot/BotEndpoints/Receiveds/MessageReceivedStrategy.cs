@@ -34,30 +34,30 @@ public class MessageReceivedStrategy : IReceivedStrategy
         {
             if (_endpoints!.TryGetValue(message.Text!, out var endpointWithoutStatus))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
-
                 await implementation.HandleAsync(message, cancellationToken);
             }
             // Для DefaultEndpoint
             else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
                 await implementation.HandleAsync(message, cancellationToken);
             }
 
             return;
         }
         //Проверка на состояние
-        var keyValue = _userStates!.Single(x => x.Value == userState);
+        var keyValue = _userStates!.SingleOrDefault(x => x.Value == userState);
 
         if (keyValue.Key != null)
         {
-            // Выберите конкретную реализацию, связанную с endpoint
             var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
-
+            await implementation.HandleAsync(message, cancellationToken);
+        }
+        // Для DefaultEndpoint
+        else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
+        {
+            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
             await implementation.HandleAsync(message, cancellationToken);
         }
 

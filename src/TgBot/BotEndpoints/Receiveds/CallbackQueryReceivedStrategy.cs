@@ -34,17 +34,13 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
         {
             if (_endpoints!.TryGetValue(callbackQuery.Data!, out var endpointWithoutStatus))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
-
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
             // Для DefaultEndpoint
             else if(_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             {
-                // Выберите конкретную реализацию, связанную с endpoint
                 var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
-
                 await implementation.HandleAsync(callbackQuery, cancellationToken);
             }
 
@@ -55,9 +51,13 @@ public class CallbackQueryReceivedStrategy : IReceivedStrategy
 
         if (keyValue.Key != null)
         {
-            // Выберите конкретную реализацию, связанную с endpoint
             var implementation = _endpointServices.First(impl => impl.GetType() == keyValue.Key);
-
+            await implementation.HandleAsync(callbackQuery, cancellationToken);
+        }
+        // Для DefaultEndpoint
+        else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
+        {
+            var implementation = _endpointServices.First(impl => impl.GetType() == endpoint);
             await implementation.HandleAsync(callbackQuery, cancellationToken);
         }
 
