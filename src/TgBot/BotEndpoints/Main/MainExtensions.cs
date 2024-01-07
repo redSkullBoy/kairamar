@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Receiveds;
@@ -21,6 +22,7 @@ public static class MainExtensions
 
         services.AddSingleton(endpointData);
         services.AddSingleton<ReceivedContext>();
+        services.AddSingleton<ReceivedDefinition>();
 
         services.AddSingleton<MessageReceivedStrategy>();
         services.AddSingleton<CallbackQueryReceivedStrategy>();
@@ -52,22 +54,22 @@ public static class MainExtensions
 
     public static IApplicationBuilder UseBotEndpoint(this IApplicationBuilder app)
     {
-        RegisterStrategy<MessageReceivedStrategy, MessageEndpoint, Message>(app);
-        RegisterStrategy<CallbackQueryReceivedStrategy, CallbackQueryEndpoint, CallbackQuery>(app);
-        RegisterStrategy<InlineQueryReceivedStrategy, InlineQueryEndpoint, InlineQuery>(app);
-        RegisterStrategy<ChosenInlineResultReceivedStrategy, ChosenInlineResultEndpoint, ChosenInlineResult>(app);
+        var receivedDefinition = app.ApplicationServices.GetRequiredService<ReceivedDefinition>();
+
+        RegisterStrategy<MessageEndpoint, Message>(app, receivedDefinition, UpdateType.Message);
+        RegisterStrategy<CallbackQueryEndpoint, CallbackQuery>(app, receivedDefinition, UpdateType.CallbackQuery);
+        RegisterStrategy<InlineQueryEndpoint, InlineQuery>(app, receivedDefinition, UpdateType.InlineQuery);
+        RegisterStrategy<ChosenInlineResultEndpoint, ChosenInlineResult>(app, receivedDefinition, UpdateType.ChosenInlineResult);
 
         return app;
     }
 
-    private static void RegisterStrategy<TStrategy, TEndpoint, TBotType>(IApplicationBuilder app) where TStrategy : notnull, IReceivedStrategy 
+    private static void RegisterStrategy<TEndpoint, TBotType>(IApplicationBuilder app, ReceivedDefinition receivedDefinition, UpdateType type) 
         where TEndpoint : notnull 
         where TBotType : notnull
     {
         var regEndpoints = new Dictionary<string, Type>();
-        var userStatesEndpoints = new Dictionary<Type, string>();
-
-        var queryReceivedStrategy = app.ApplicationServices.GetRequiredService<TStrategy>();
+        var userStatesEndpoints = new Dictionary<string, Type>();
 
         using var scope = app.ApplicationServices.CreateScope();
         var endpointServices = (IEnumerable<BaseEndpoint<TBotType>>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
@@ -88,7 +90,7 @@ public static class MainExtensions
             #region UserStates
             if (userState != null)
             {
-                userStatesEndpoints.Add(endpointService.GetType(), userState);
+                userStatesEndpoints.Add(userState, endpointService.GetType());
             }
             #endregion
         }
@@ -96,7 +98,7 @@ public static class MainExtensions
         if (!regEndpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
             throw new Exception($"добавьте endpoint по умолчанию для всех типов сообщений");
 
-        queryReceivedStrategy.Register(regEndpoints);
-        queryReceivedStrategy.Register(userStatesEndpoints);
+        receivedDefinition.AddEndpoints(regEndpoints, type);
+        receivedDefinition.AddStates(userStatesEndpoints);
     }
 }

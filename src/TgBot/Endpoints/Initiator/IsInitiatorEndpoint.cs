@@ -1,4 +1,7 @@
-﻿using Telegram.Bot;
+﻿using DataAccess.Sqlite;
+using Domain.Entities.Enum;
+using Microsoft.AspNetCore.Identity;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
@@ -8,10 +11,12 @@ namespace TgBot.Endpoints.Initiator;
 public class IsInitiatorEndpoint : CallbackQueryEndpoint
 {
     private readonly ITelegramBotClient _botClient;
+    private readonly UserManager<AppUser> _userManager;
 
-    public IsInitiatorEndpoint(ITelegramBotClient botClient)
+    public IsInitiatorEndpoint(ITelegramBotClient botClient, UserManager<AppUser> userManager)
     {
         _botClient = botClient;
+        _userManager = userManager;
     }
 
     public override void Configure()
@@ -21,7 +26,28 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        const string text = "Поздравляю вы стали водителем. Можете использовать следующие функции:\n";
+        string text = "Поздравляю вы стали водителем. Можете использовать следующие функции:\n";
+
+        if (callbackQuery.From == null)
+            return;
+
+        var info = new UserLoginInfo("Telegram", callbackQuery.From.Id.ToString(), "Telegram");
+
+        // Если у пользователя уже есть логин (т.е. если есть запись в таблице AspNetUserLogins),
+        // то войдите в систему пользователя с помощью этого внешнего поставщика логинов
+        var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+        if (user == null)
+            return;
+
+        user.UserType = AppUserType.Initiator;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            text = "упс, ошибка";
+        }
 
         InlineKeyboardMarkup inlineKeyboard = new(
                 new[]

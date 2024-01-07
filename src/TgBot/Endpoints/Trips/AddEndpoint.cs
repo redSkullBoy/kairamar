@@ -4,7 +4,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
-namespace TgBot.Endpoints.Trip;
+namespace TgBot.Endpoints.Trips;
 
 public class AddEndpoint : CallbackQueryEndpoint
 {
@@ -49,6 +49,6 @@ public class AddEndpoint : CallbackQueryEndpoint
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
-        _userBotService.SetState(callbackQuery.From.Id, "AddDeparturePoint");
+        _userBotService.SetState(callbackQuery.From.Id, "SearchAddress");
     }
 }

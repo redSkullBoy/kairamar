@@ -1,84 +1,23 @@
 ﻿using Telegram.Bot.Types;
-using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
 namespace TgBot.BotEndpoints.Receiveds;
 
-public class ChosenInlineResultReceivedStrategy : IReceivedStrategy
+public class ChosenInlineResultReceivedStrategy : BaseReceivedStrategy<ChosenInlineResult, ChosenInlineResultEndpoint>, IReceivedStrategy
 {
-    private Dictionary<string, Type> _endpoints = new Dictionary<string, Type>();
-    private Dictionary<Type, string> _userStates = new();
-
     private readonly ILogger<ChosenInlineResultReceivedStrategy> _logger;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IUserBotService _botUserService;
 
-    public ChosenInlineResultReceivedStrategy(ILogger<ChosenInlineResultReceivedStrategy> logger
-        , IServiceScopeFactory serviceScopeFactory, IUserBotService botUserService)
+    public ChosenInlineResultReceivedStrategy(ILogger<ChosenInlineResultReceivedStrategy> logger, IServiceScopeFactory serviceScopeFactory, 
+        IUserBotService botUserService, ReceivedDefinition receivedDef) : base(serviceScopeFactory, botUserService, receivedDef)
     {
         _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;
-        _botUserService = botUserService;
     }
 
     public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
-        var requestData = update.ChosenInlineResult!;
-        var userId = update.ChosenInlineResult!.From.Id;
+        _logger.LogInformation("Received inline result: {ChosenInlineResultId}", update.ChosenInlineResult!.ResultId);
 
-        _logger.LogInformation("Received inline result: {ChosenInlineResultId}", requestData.ResultId);
-
-        using var scope = _serviceScopeFactory.CreateScope();
-        var endpointServices = (IEnumerable<ChosenInlineResultEndpoint>)scope.ServiceProvider.GetServices(typeof(ChosenInlineResultEndpoint));
-
-        var userState = _botUserService.GetStateOrNull(update.ChosenInlineResult!.From!.Id);
-        //если нет статуса то ищем по endpoints
-        if (string.IsNullOrWhiteSpace(userState))
-        {
-            if (_endpoints!.TryGetValue(requestData.Query!, out var endpointWithoutStatus))
-            {
-                var implementation = endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
-                await implementation.HandleAsync(requestData, cancellationToken);
-            }
-            // Для DefaultEndpoint
-            else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
-            {
-                var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
-                await implementation.HandleAsync(requestData, cancellationToken);
-            }
-
-            return;
-        }
-        //Проверка на состояние
-        var keyValue = _userStates!.SingleOrDefault(x => x.Value == userState);
-
-        if (keyValue.Key != null)
-        {
-            var implementation = endpointServices.First(impl => impl.GetType() == keyValue.Key);
-            await implementation.HandleAsync(requestData, cancellationToken);
-        }
-        // Для DefaultEndpoint
-        else if (_endpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
-        {
-            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
-            await implementation.HandleAsync(requestData, cancellationToken);
-        }
-    }
-
-    public void Register(Dictionary<string, Type> endpoints)
-    {
-        foreach (var endpoint in endpoints)
-        {
-            _endpoints.Add(endpoint.Key, endpoint.Value);
-        }
-    }
-
-    public void Register(Dictionary<Type, string> states)
-    {
-        foreach (var state in states)
-        {
-            _userStates.Add(state.Key, state.Value);
-        }
+        await ProcessAsync(update.ChosenInlineResult!, update.ChosenInlineResult!.From.Id, update.ChosenInlineResult.Query!, update.Type, cancellationToken);
     }
 }

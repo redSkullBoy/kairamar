@@ -37,6 +37,9 @@ public class Program
                 });
 
         builder.Services.AddSingleton<IUserBotService, UserBotService>();
+        builder.Services.AddSingleton<MemoryCacheService>();
+
+        builder.Services.AddMemoryCache();
 
         //BotEndpoints
         builder.Services.AddBotEndpoint();

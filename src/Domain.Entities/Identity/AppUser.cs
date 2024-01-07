@@ -11,7 +11,7 @@ public class AppUser : IdentityUser
 
     public string? LastName { get; set; }
 
-    public AppUserType Type { get; set; }
+    public AppUserType UserType { get; set; }
 
     public Collection<AnotherAccount>? AnotherAccounts { get; set; }
 }

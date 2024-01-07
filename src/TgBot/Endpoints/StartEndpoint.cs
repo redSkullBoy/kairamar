@@ -28,10 +28,13 @@ public class StartEndpoint : MessageEndpoint
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
     {
+        if(message.From == null)
+            return;
+
         var info = new UserLoginInfo("Telegram", message.From.Id.ToString(), "Telegram");
         // Если у пользователя уже есть логин (т.е. если есть запись в таблице AspNetUserLogins),
         // то войдите в систему пользователя с помощью этого внешнего поставщика логинов
-        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: false);
 
         if (signInResult.Succeeded)
             return;
@@ -62,7 +65,7 @@ public class StartEndpoint : MessageEndpoint
         await _userManager.AddLoginAsync(user, info);
 
         //Затем подписываем пользователя
-        await _signInManager.SignInAsync(user, isPersistent: false);
+        await _signInManager.SignInAsync(user, isPersistent: true);
         //
         var prettyUserName = message.From.GetPrettyName();
 
