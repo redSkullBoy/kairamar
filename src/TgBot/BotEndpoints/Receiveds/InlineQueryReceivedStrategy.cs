@@ -7,19 +7,33 @@ namespace TgBot.BotEndpoints.Receiveds;
 public class InlineQueryReceivedStrategy : BaseReceivedStrategy<InlineQuery, InlineQueryEndpoint>, IReceivedStrategy
 {
     private readonly ILogger<InlineQueryReceivedStrategy> _logger;
+    private readonly IUserBotService _botUserService;
 
-    public InlineQueryReceivedStrategy(ILogger<InlineQueryReceivedStrategy> logger, IServiceScopeFactory serviceScopeFactory, 
-        IUserBotService botUserService, ReceivedDefinition receivedDef) : base(serviceScopeFactory, botUserService, receivedDef)
+    public InlineQueryReceivedStrategy(ILogger<InlineQueryReceivedStrategy> logger, IServiceScopeFactory serviceScopeFactory
+        , IUserBotService botUserService, ReceivedDefinition receivedDef) : base(serviceScopeFactory, receivedDef)
     {
         _logger = logger;
+        _botUserService = botUserService;
     }
 
-    public async Task HandleAsync(Update update, CancellationToken cancellationToken)
+    public string? GetUserState(Update update)
+    {
+        var userState = _botUserService.GetStateOrNull(update.CallbackQuery!.From!.Id);
+
+        return userState;
+    }
+
+    public async Task HandleEndpointAsync(Update update, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received inline keyboard callback from: {requestDataId}", update.InlineQuery!.Id);
 
-        await ProcessAsync(update.InlineQuery!, update.InlineQuery!.From.Id, update.InlineQuery.Query!, update.Type, cancellationToken);
+        await HandleEndpointAsync(update.InlineQuery!, update.InlineQuery!.Query!, update.Type, cancellationToken);
+    }
 
-        _logger.LogInformation("Для такого запроса не найден Endpoint: {requestDataId}", update.InlineQuery!.Id);
+    public async Task HandleUserStateAsync(Update update, Type userStateEndpoint, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received inline keyboard callback from: {requestDataId}", update.InlineQuery!.Id);
+
+        await HandleUserStateAsync(update.InlineQuery!, userStateEndpoint, cancellationToken);
     }
 }

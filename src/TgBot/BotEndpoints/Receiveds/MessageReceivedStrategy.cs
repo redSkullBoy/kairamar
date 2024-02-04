@@ -7,21 +7,33 @@ namespace TgBot.BotEndpoints.Receiveds;
 public class MessageReceivedStrategy : BaseReceivedStrategy<Message, MessageEndpoint>, IReceivedStrategy
 {
     private readonly ILogger<MessageReceivedStrategy> _logger;
+    private readonly IUserBotService _botUserService;
 
     public MessageReceivedStrategy(ILogger<MessageReceivedStrategy> logger, IServiceScopeFactory serviceScopeFactory
-        , IUserBotService botUserService, ReceivedDefinition receivedDef) : base(serviceScopeFactory, botUserService, receivedDef)
+        , IUserBotService botUserService, ReceivedDefinition receivedDef) : base(serviceScopeFactory, receivedDef)
     {
         _logger = logger;
+        _botUserService = botUserService;
     }
 
-    public async Task HandleAsync(Update update, CancellationToken cancellationToken)
+    public string? GetUserState(Update update)
     {
-        var message = update.Message!;
+        var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
 
-        _logger.LogInformation("Receive message type: {MessageType}", message.Type);
+        return userState;
+    }
 
-        await ProcessAsync(update.Message!, update.Message!.From!.Id, update.Message.Text!, update.Type, cancellationToken);
+    public async Task HandleEndpointAsync(Update update, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Receive message type: {MessageType}", update.Message!.Type);
 
-        _logger.LogInformation("Unknown message type: {MessageType}", update.Type);
+        await HandleEndpointAsync(update.Message!, update.Message!.Text!, update.Type, cancellationToken);
+    }
+
+    public async Task HandleUserStateAsync(Update update, Type userStateEndpoint, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Receive message type: {MessageType}", update.Message!.Type);
+
+        await HandleUserStateAsync(update.Message, userStateEndpoint, cancellationToken);
     }
 }

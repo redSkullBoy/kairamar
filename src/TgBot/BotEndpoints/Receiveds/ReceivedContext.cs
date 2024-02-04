@@ -7,9 +7,11 @@ public class ReceivedContext
 {
     private readonly Dictionary<UpdateType, IReceivedStrategy> _strategies;
     private readonly ILogger<ReceivedContext> _logger;
+    private readonly ReceivedDefinition _receivedDef;
 
-    public ReceivedContext(ILogger<ReceivedContext> logger, MessageReceivedStrategy messageReceivedStrategy, CallbackQueryReceivedStrategy queryReceivedStrategy
-        , InlineQueryReceivedStrategy inlineQueryReceivedStrategy, ChosenInlineResultReceivedStrategy chosenInlineResultStrategy)
+    public ReceivedContext(ILogger<ReceivedContext> logger, ReceivedDefinition receivedDef, MessageReceivedStrategy messageReceivedStrategy, 
+        CallbackQueryReceivedStrategy queryReceivedStrategy, InlineQueryReceivedStrategy inlineQueryReceivedStrategy,
+        ChosenInlineResultReceivedStrategy chosenInlineResultStrategy)
     {
         _strategies = new Dictionary<UpdateType, IReceivedStrategy>
         {
@@ -21,13 +23,23 @@ public class ReceivedContext
         };
 
         _logger = logger;
+        _receivedDef = receivedDef;
     }
 
     public async Task HandleAsync(Update update, CancellationToken cancellationToken)
     {
         if (_strategies.TryGetValue(update.Type, out var contextStrategy))
         {
-            await contextStrategy.HandleAsync(update, cancellationToken);
+            var userState = contextStrategy.GetUserState(update);
+
+            //Проверка на состояние
+            if (!string.IsNullOrWhiteSpace(userState) && _receivedDef.TryGetValueState(userState, out var userStateEndpoint))
+            {
+                await contextStrategy.HandleUserStateAsync(update, userStateEndpoint!, cancellationToken);
+                return;
+            }
+
+            await contextStrategy.HandleEndpointAsync(update, cancellationToken);
         }
 
         _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);

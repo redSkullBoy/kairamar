@@ -4,5 +4,9 @@ namespace TgBot.BotEndpoints.Receiveds;
 
 public interface IReceivedStrategy
 {
-    public abstract Task HandleAsync(Update request, CancellationToken cancellationToken);
+    public string? GetUserState(Update update);
+
+    public Task HandleEndpointAsync(Update update, CancellationToken cancellationToken);
+
+    public Task HandleUserStateAsync(Update update, Type userStateEndpoint, CancellationToken cancellationToken);
 }
