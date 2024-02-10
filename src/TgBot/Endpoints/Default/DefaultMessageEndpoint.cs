@@ -19,7 +19,7 @@ public class DefaultMessageEndpoint : MessageEndpoint
         Routes(BaseEndpointConst.DEFAULT);
     }
 
-    public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
+    public override async Task DefaultHandleAsync(Message message, string userState, CancellationToken cancellationToken)
     {
         string text = $"{message.Text} - команда не распознана";
 

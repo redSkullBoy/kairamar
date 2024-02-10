@@ -30,10 +30,17 @@ public class CallbackQueryReceivedStrategy : BaseReceivedStrategy<CallbackQuery,
         await HandleEndpointAsync(update.CallbackQuery!, update.CallbackQuery!.Data!, update.Type, cancellationToken);
     }
 
-    public async Task HandleUserStateAsync(Update update, Type userStateEndpoint, CancellationToken cancellationToken)
+    public async Task HandleUserStateAsync(Update update, Type userStateEndpoint, string userState, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", update.CallbackQuery!.Id);
 
-        await HandleUserStateAsync(update.CallbackQuery, userStateEndpoint, cancellationToken);
+        await HandleUserStateAsync(update.CallbackQuery, userStateEndpoint, update.Type, userState, cancellationToken);
+    }
+
+    public async Task HandleDefaultUserStateAsync(Update update, string userState, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Receive message type: {MessageType}", update.Message!.Type);
+
+        await HandleDefaultUserStateAsync(update.CallbackQuery!, update.Type, userState, cancellationToken);
     }
 }

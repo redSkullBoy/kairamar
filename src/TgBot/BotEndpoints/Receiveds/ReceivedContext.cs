@@ -32,14 +32,23 @@ public class ReceivedContext
         {
             var userState = contextStrategy.GetUserState(update);
 
-            //Проверка на состояние
-            if (!string.IsNullOrWhiteSpace(userState) && _receivedDef.TryGetValueState(userState, out var userStateEndpoint))
+            //Если соостояния нет, обрабатываеем через Endpoint
+            if (string.IsNullOrWhiteSpace(userState))
             {
-                await contextStrategy.HandleUserStateAsync(update, userStateEndpoint!, cancellationToken);
+                await contextStrategy.HandleEndpointAsync(update, cancellationToken);
                 return;
             }
 
-            await contextStrategy.HandleEndpointAsync(update, cancellationToken);
+            //Проверка на состояние
+            if (_receivedDef.TryGetValueState(userState, out var userStateEndpoint))
+            {
+                await contextStrategy.HandleUserStateAsync(update, userStateEndpoint!, userState, cancellationToken);
+                return;
+            }
+            else
+            {
+                await contextStrategy.HandleDefaultUserStateAsync(update, userState, cancellationToken);
+            }
         }
 
         _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);

@@ -19,7 +19,7 @@ public class DefaultCallbackQueryEndpoint : CallbackQueryEndpoint
         Routes(BaseEndpointConst.DEFAULT);
     }
 
-    public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
+    public override async Task DefaultHandleAsync(CallbackQuery callbackQuery, string userState, CancellationToken cancellationToken)
     {
         //Поиск имени кнопки
         string buttonText = string.Empty;

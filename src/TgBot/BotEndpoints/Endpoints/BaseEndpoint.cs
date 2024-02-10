@@ -22,6 +22,8 @@ namespace TgBot.BotEndpoints.Endpoints
         /// <param name="ct">a cancellation token</param>
         public virtual Task HandleAsync(TRequest req, CancellationToken ct) => throw new NotImplementedException();
 
+        public virtual Task DefaultHandleAsync(TRequest req, string userState, CancellationToken ct) => throw new NotImplementedException();
+
         /// <summary>
         /// use this method to configure how the endpoint should be listening to incoming requests.
         /// <para>HINT: it is only called once during endpoint auto registration during app startup.</para>

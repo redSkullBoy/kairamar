@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types.Enums;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Telegram.Bot.Types.Enums;
 using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 
@@ -31,16 +32,39 @@ public class BaseReceivedStrategy<TRequest, TEndpoint>
         else if (_receivedDef.TryGetValueEndpoint(BaseEndpointConst.DEFAULT, type, out var endpoint))
         {
             var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
-            await implementation.HandleAsync(request, cancellationToken);
+            await implementation.DefaultHandleAsync(request, string.Empty, cancellationToken);
         }
     }
 
-    public async Task HandleUserStateAsync(TRequest request, Type userStateEndpoint, CancellationToken cancellationToken)
+    public async Task HandleUserStateAsync(TRequest request, Type userStateEndpoint, UpdateType type, string userState, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var endpointServices = (IEnumerable<TEndpoint>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
+        //если для этого состояния другой тип сообщения
+        var implementation = endpointServices.FirstOrDefault(impl => impl.GetType() == userStateEndpoint);
+
+        if (implementation != null)
+        {
+            await implementation.HandleAsync(request, cancellationToken);
+            return;
+        }
+
+        if (_receivedDef.TryGetValueEndpoint(BaseEndpointConst.DEFAULT, type, out var endpoint))
+        {
+            var implementationDef = endpointServices.First(impl => impl.GetType() == endpoint);
+            await implementationDef.DefaultHandleAsync(request, userState, cancellationToken);
+        }
+    }
+
+    public async Task HandleDefaultUserStateAsync(TRequest request, UpdateType type, string userState, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var endpointServices = (IEnumerable<TEndpoint>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
 
-        var implementation = endpointServices.First(impl => impl.GetType() == userStateEndpoint);
-        await implementation.HandleAsync(request, cancellationToken);
+        if (_receivedDef.TryGetValueEndpoint(BaseEndpointConst.DEFAULT, type, out var endpoint))
+        {
+            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
+            await implementation.DefaultHandleAsync(request, userState, cancellationToken);
+        }
     }
 }

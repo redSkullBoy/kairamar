@@ -19,7 +19,7 @@ public class DefaultChosenInlineResultEndpoint : ChosenInlineResultEndpoint
         Routes(BaseEndpointConst.DEFAULT);
     }
 
-    public override async Task HandleAsync(ChosenInlineResult message, CancellationToken cancellationToken)
+    public override async Task DefaultHandleAsync(ChosenInlineResult message, string userState, CancellationToken cancellationToken)
     {
         const string text = "Данная функция не добавлена\n";
 

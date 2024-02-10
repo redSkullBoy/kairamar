@@ -19,7 +19,7 @@ public class DefaultInlineQueryEndpoint : InlineQueryEndpoint
         Routes(BaseEndpointConst.DEFAULT);
     }
 
-    public override async Task HandleAsync(InlineQuery inlineQuery, CancellationToken cancellationToken)
+    public override async Task DefaultHandleAsync(InlineQuery inlineQuery, string userState, CancellationToken cancellationToken)
     {
         const string text = "Данная функция не добавлена\n";
 
