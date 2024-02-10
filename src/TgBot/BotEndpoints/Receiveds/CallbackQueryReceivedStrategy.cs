@@ -39,7 +39,7 @@ public class CallbackQueryReceivedStrategy : BaseReceivedStrategy<CallbackQuery,
 
     public async Task HandleDefaultUserStateAsync(Update update, string userState, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Receive message type: {MessageType}", update.Message!.Type);
+        _logger.LogInformation("Receive message type: {MessageType}", update);
 
         await HandleDefaultUserStateAsync(update.CallbackQuery!, update.Type, userState, cancellationToken);
     }

@@ -6,5 +6,9 @@ public interface IUserBotService
 {
     public string? GetStateOrNull(long userId);
 
-    public void SetState(long userId, string state);
+    public bool PreviousState(long userId);
+
+    public bool NetxState(long userId);
+
+    public void SetProcess(long userId, string process);
 }

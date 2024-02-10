@@ -3,6 +3,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
+using TgBot.Constants;
 
 namespace TgBot.Endpoints.Trips;
 
@@ -49,6 +50,6 @@ public class AddEndpoint : CallbackQueryEndpoint
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
-        _userBotService.SetState(callbackQuery.From.Id, "SearchAddress");
+        _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.AddTrip);
     }
 }

@@ -6,18 +6,19 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
+using TgBot.Constants;
 using TgBot.Services;
 
 namespace TgBot.Endpoints.Trips;
 
-public class AddDeparturePointEndpoint : MessageEndpoint
+public class AddFromAddressEndpoint : CallbackQueryEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache; 
     private readonly UserManager<AppUser> _userManager;
 
-    public AddDeparturePointEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public AddFromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
         _botClient = botClient;
@@ -27,19 +28,28 @@ public class AddDeparturePointEndpoint : MessageEndpoint
 
     public override void Configure()
     {
-        State("AddDeparturePoint");
+        State(UserStates.AddFromAddress);
     }
 
-    public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        _cache.SetTrip(message.From.Id, new Trip(), TimeSpan.FromMinutes(5));
+        await _botClient.AnswerCallbackQueryAsync(
+            callbackQueryId: callbackQuery.Id,
+            cancellationToken: cancellationToken);
+
+        var trip = new Trip
+        {
+            FromAddressId = int.Parse(callbackQuery.Data)
+        };
+
+        _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
 
         await _botClient.SendTextMessageAsync(
-            chatId: message!.Chat.Id,
+            chatId: callbackQuery.Message!.Chat.Id,
             text: "Введите - Пункт назначения",
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
-        _userBotService.SetState(message.From!.Id, "AddDestinationPoint");
+        _userBotService.NetxState(callbackQuery.From!.Id);
     }
 }
