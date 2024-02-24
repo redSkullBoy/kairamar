@@ -1,4 +1,5 @@
-﻿using DataAccess.Sqlite;
+﻿using Ardalis.Result;
+using DataAccess.Sqlite;
 using Domain.Entities.Model;
 using Microsoft.AspNetCore.Identity;
 using Telegram.Bot;
@@ -9,16 +10,16 @@ using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
 
-namespace TgBot.Endpoints.Trips;
+namespace TgBot.Endpoints.Trips.AddProcess;
 
-public class AddFromAddressEndpoint : CallbackQueryEndpoint
+public class AddToAddressEndpoint : CallbackQueryEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
-    private readonly MemoryCacheService _cache; 
+    private readonly MemoryCacheService _cache;
     private readonly UserManager<AppUser> _userManager;
 
-    public AddFromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public AddToAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
         _botClient = botClient;
@@ -28,7 +29,7 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
 
     public override void Configure()
     {
-        State(UserStates.AddFromAddress);
+        State(UserStates.TripAddToAddress);
     }
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
@@ -37,17 +38,28 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        var trip = new Trip
-        {
-            FromAddressId = int.Parse(callbackQuery.Data)
-        };
+        var trip = _cache.GetTripOrNull(callbackQuery.From!.Id) ?? new Trip();
+
+        trip.ToAddressId = int.Parse(callbackQuery.Data!);
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
 
+        InlineKeyboardMarkup inlineKeyboard = new(
+                new[]
+                {
+                    // first row
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("Сегодня", "today"),
+                        InlineKeyboardButton.WithCallbackData("Завтра", "tomorrow"),
+                        InlineKeyboardButton.WithCallbackData("Послезавтра", "afterTomorrow"),
+                    },
+                });
+
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
-            text: "Введите - Пункт назначения",
-            replyMarkup: new ReplyKeyboardRemove(),
+            text: "Выберите дату начала",
+            replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
 
         _userBotService.NetxState(callbackQuery.From!.Id);

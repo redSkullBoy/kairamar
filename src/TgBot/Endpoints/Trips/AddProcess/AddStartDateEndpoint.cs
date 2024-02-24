@@ -1,7 +1,4 @@
-﻿using DataAccess.Sqlite;
-using Domain.Entities.Model;
-using Microsoft.AspNetCore.Identity;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
@@ -9,26 +6,24 @@ using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
 
-namespace TgBot.Endpoints.Trips;
+namespace TgBot.Endpoints.Trips.AddProcess;
 
-public class AddToAddressEndpoint : CallbackQueryEndpoint
+public class AddStartDateEndpoint : CallbackQueryEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
-    private readonly MemoryCacheService _cache; 
-    private readonly UserManager<AppUser> _userManager;
+    private readonly MemoryCacheService _cache;
 
-    public AddToAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public AddStartDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
-        _userManager = userManager;
     }
 
     public override void Configure()
     {
-        State(UserStates.AddToAddress);
+        State(UserStates.TripAddStartDate);
     }
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
@@ -37,15 +32,30 @@ public class AddToAddressEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        var trip = _cache.GetTripOrNull(callbackQuery.From!.Id) ?? new Trip();
+        var startData = new DateTime();
 
-        trip.ToAddressId = int.Parse(callbackQuery.Data);
+        switch (callbackQuery.Data)
+        {
+            case "today":
+                startData = DateTime.Now;
+                break;
+            case "tomorrow":
+                startData = DateTime.Now.AddDays(1);
+                break;
+            case "afterTomorrow":
+                startData = DateTime.Now.AddDays(2);
+                break;
+        }
+
+        var trip = _cache.GetTripOrNull(callbackQuery.From!.Id)!;
+
+        trip.StartDateLocal = new DateTime(startData.Year, startData.Month, startData.Day, 0, 0, 0);
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
-            text: "Введите - Пункт назначения",
+            text: "Введите - время. Пример: 16 20",
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 

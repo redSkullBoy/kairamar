@@ -26,7 +26,7 @@ public class SearchEndpoint :  MessageEndpoint
 
     public override void Configure()
     {
-        State(UserStates.SearchAddress);
+        State(UserStates.TripSearchAddress);
     }
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)

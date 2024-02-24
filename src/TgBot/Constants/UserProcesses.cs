@@ -1,4 +1,6 @@
-﻿namespace TgBot.Constants;
+﻿using TgBot.Endpoints.Trips.AddProcess;
+
+namespace TgBot.Constants;
 
 public static class UserProcesses
 {
@@ -8,10 +10,13 @@ public static class UserProcesses
     {
         [AddTrip] = new List<string>
         {
-            UserStates.SearchAddress,
-            UserStates.AddFromAddress,
-            UserStates.SearchAddress,
-            UserStates.AddToAddress
+            UserStates.TripSearchAddress,
+            UserStates.TripAddFromAddress,
+            UserStates.TripSearchAddress,
+            UserStates.TripAddToAddress,
+            UserStates.TripAddStartDate,
+            UserStates.TripAddStartTime,
+            nameof(AddToAddressEndpoint.Definition.UserState)
         },
         // Другие процессы...
     };

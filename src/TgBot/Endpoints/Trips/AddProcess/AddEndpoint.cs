@@ -1,11 +1,10 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 
-namespace TgBot.Endpoints.Trips;
+namespace TgBot.Endpoints.Trips.AddProcess;
 
 public class AddEndpoint : CallbackQueryEndpoint
 {
@@ -41,13 +40,11 @@ public class AddEndpoint : CallbackQueryEndpoint
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: info,
-            replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: "Введите - Пункт отправления",
-            replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
         _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.AddTrip);
