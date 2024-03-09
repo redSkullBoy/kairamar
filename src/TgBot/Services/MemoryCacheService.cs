@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Model;
 using Microsoft.Extensions.Caching.Memory;
+using UseCases.Handlers.Trips.Dto;
 
 namespace TgBot.Services;
 
@@ -14,11 +15,11 @@ public class MemoryCacheService
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
     }
 
-    public Trip? GetTripOrNull(long userId)
+    public CreateTripDto? GetTripOrNull(long userId)
     {
         var key = $"{trip}_{userId}";
 
-        if (_memoryCache.TryGetValue(key, out Trip? cachedData))
+        if (_memoryCache.TryGetValue(key, out CreateTripDto? cachedData))
         {
             return cachedData;
         }
@@ -26,7 +27,7 @@ public class MemoryCacheService
         return null;
     }
 
-    public void SetTrip(long userId, Trip data, TimeSpan expirationTime)
+    public void SetTrip(long userId, CreateTripDto data, TimeSpan expirationTime)
     {
         var cacheEntryOptions = new MemoryCacheEntryOptions
         {

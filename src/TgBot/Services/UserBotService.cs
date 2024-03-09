@@ -6,7 +6,7 @@ namespace TgBot.Services;
 
 public class UserBotService : IUserBotService
 {
-    private ConcurrentDictionary<long, string> _userState = new ConcurrentDictionary<long, string>();
+    private ConcurrentDictionary<long, int> _userStateIndex = new ConcurrentDictionary<long, int>();
     private ConcurrentDictionary<long, string> _userProcesses = new ConcurrentDictionary<long, string>();
 
     public UserBotService()
@@ -17,26 +17,20 @@ public class UserBotService : IUserBotService
     public bool PreviousState(long userId)
     {
         if (_userProcesses.TryGetValue(userId, out var process)
-            && _userState.TryGetValue(userId, out var currentState)
-            && UserProcesses.ProcessStates.TryGetValue(process, out var states))
+            && _userStateIndex.TryGetValue(userId, out var currentStateIndex))
         {
-            var index = states.IndexOf(currentState);
-
-            if (index < 1)
+            if (currentStateIndex <= 1)
                 return false;
 
-            var preState = states[index - 1];
-
-            _userState.AddOrUpdate(userId, preState,
+            var preStateIndex = currentStateIndex - 1;
+            _userStateIndex.AddOrUpdate(userId, preStateIndex,
                 (key, oldValue) =>
                 {
-                    return preState;
+                    return preStateIndex;
                 }
             );
-
             return true;
         }
-
         return false;
     }
 
@@ -45,29 +39,22 @@ public class UserBotService : IUserBotService
         if (_userProcesses.TryGetValue(userId, out var process) 
             && UserProcesses.ProcessStates.TryGetValue(process, out var states))
         {
-            var nextState = states[0];
-
-            if (_userState.TryGetValue(userId, out var currentState))
+            var nextStateIndex = 1;
+            if (_userStateIndex.TryGetValue(userId, out var currentStateIndex))
             {
-                var index = states.IndexOf(currentState);
-
-                if (index < 0 && index > states.Count)
-                    return false;
-
-                nextState = states[index + 1];
+                if (states.Count >= currentStateIndex + 1)
+                {
+                    nextStateIndex = currentStateIndex + 1;
+                }
             }
-
-            _userState.AddOrUpdate(userId, nextState,
+            _userStateIndex.AddOrUpdate(userId, nextStateIndex,
                 (key, oldValue) =>
                 {
-                    return nextState;
+                    return nextStateIndex;
                 }
             );
-
             return true;
         }
-        
-
         return false;
     }
 
@@ -82,10 +69,11 @@ public class UserBotService : IUserBotService
 
         if (UserProcesses.ProcessStates.TryGetValue(process, out var states))
         {
-            _userState.AddOrUpdate(userId, states[0],
+            //если есть состояние, добавляем первое
+            _userStateIndex.AddOrUpdate(userId, 1,
                 (key, oldValue) =>
                 {
-                    return states[0];
+                    return 1;
                 }
             );
         }
@@ -93,8 +81,12 @@ public class UserBotService : IUserBotService
 
     public string? GetStateOrNull(long userId)
     {
-        if (_userState.TryGetValue(userId, out var state))
-            return state;
+        if (_userProcesses.TryGetValue(userId, out var process) 
+            && UserProcesses.ProcessStates.TryGetValue(process, out var states)
+            && _userStateIndex.TryGetValue(userId, out var currentStateIndex))
+        {
+            return states[currentStateIndex];
+        }
 
         return null;
     }

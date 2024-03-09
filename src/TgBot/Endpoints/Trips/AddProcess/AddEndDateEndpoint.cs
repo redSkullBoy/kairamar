@@ -11,14 +11,14 @@ using TgBot.Services;
 
 namespace TgBot.Endpoints.Trips.AddProcess;
 
-public class AddStartTimeEndpoint : MessageEndpoint
+public class AddEndDateEndpoint : MessageEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
     private readonly UserManager<AppUser> _userManager;
 
-    public AddStartTimeEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public AddEndDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
         _botClient = botClient;
@@ -28,7 +28,7 @@ public class AddStartTimeEndpoint : MessageEndpoint
 
     public override void Configure()
     {
-        State(UserStates.TripAddStartTime);
+        State(UserStates.TripAddEndDate);
     }
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ public class AddStartTimeEndpoint : MessageEndpoint
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
-                text: "Неверный формат времени. Введите время в формате: 16 20",
+                text: "Неверный формат времени. Введите время в формате: 1 30",
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
@@ -78,13 +78,13 @@ public class AddStartTimeEndpoint : MessageEndpoint
         }
 
         var timeOnly = TimeOnly.Parse(formattedTime);
-        var requiresTime = new TimeSpan(1, 0, 0);
-        //проверка что время больше 1 часа
-        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() >= requiresTime)
+        var requiresTime = new TimeSpan(0, 30, 0);
+        //проверка что время больше 30 минут
+        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() <= requiresTime)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
-                text: "Время должно быть на час больше",
+                text: "Время должно быть не меньше 30 минут",
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
@@ -94,14 +94,35 @@ public class AddStartTimeEndpoint : MessageEndpoint
         var trip = _cache.GetTripOrNull(message.From!.Id)!;
 
         var dateOnly = new DateOnly(trip.StartDateLocal.Year, trip.StartDateLocal.Month, trip.StartDateLocal.Day);
-        trip.StartDateLocal = dateOnly.ToDateTime(timeOnly);
+        trip.EndDateLocal = dateOnly.ToDateTime(timeOnly);
 
         _cache.SetTrip(message.From!.Id, trip, TimeSpan.FromMinutes(5));
 
+        InlineKeyboardMarkup inlineKeyboard = new(
+                new[]
+                {
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("1", "1"),
+                    },
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("2", "2"),
+                        InlineKeyboardButton.WithCallbackData("3", "3"),
+                        InlineKeyboardButton.WithCallbackData("4", "4"),
+                    },
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("5", "5"),
+                        InlineKeyboardButton.WithCallbackData("6", "6"),
+                        InlineKeyboardButton.WithCallbackData("7", "7"),
+                    },
+                });
+
         await _botClient.SendTextMessageAsync(
             chatId: message!.Chat.Id,
-            text: "Введите - Продолжительность поездки. Пример: 1 30",
-            replyMarkup: new ReplyKeyboardRemove(),
+            text: "Выберите - Количество свободных мест",
+            replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
 
         _userBotService.NetxState(message.From!.Id);

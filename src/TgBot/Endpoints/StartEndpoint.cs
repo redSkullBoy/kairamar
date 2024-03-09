@@ -1,5 +1,6 @@
 ﻿using DataAccess.Sqlite;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -64,8 +65,13 @@ public class StartEndpoint : MessageEndpoint
         // Добавьте логин (т.е. вставьте строку для пользователя в таблицу AspNetUserLogins)
         await _userManager.AddLoginAsync(user, info);
 
-        //Затем подписываем пользователя
-        await _signInManager.SignInAsync(user, isPersistent: true);
+        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+                };
+
+        await _signInManager.SignInWithClaimsAsync(user, true, claims);
         //
         var prettyUserName = message.From.GetPrettyName();
 

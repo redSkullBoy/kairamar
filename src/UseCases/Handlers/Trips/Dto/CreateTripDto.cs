@@ -10,8 +10,8 @@ public class CreateTripDto
 
     public string Locale { get; set; } = string.Empty;
 
-    public DateTime? StartDateLocal { get; set; } = DateTime.Now;
-    public DateTime? EndDateLocal { get; set; } = DateTime.Now.AddHours(1);
+    public DateTime StartDateLocal { get; set; } = DateTime.Now;
+    public DateTime EndDateLocal { get; set; } = DateTime.Now.AddHours(1);
 
     public int RequestedSeats { get; set; }
 

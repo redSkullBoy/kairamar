@@ -9,6 +9,7 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
+using UseCases.Handlers.Trips.Dto;
 
 namespace TgBot.Endpoints.Trips.AddProcess;
 
@@ -38,7 +39,7 @@ public class AddToAddressEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        var trip = _cache.GetTripOrNull(callbackQuery.From!.Id) ?? new Trip();
+        var trip = _cache.GetTripOrNull(callbackQuery.From!.Id) ?? new CreateTripDto();
 
         trip.ToAddressId = int.Parse(callbackQuery.Data!);
 

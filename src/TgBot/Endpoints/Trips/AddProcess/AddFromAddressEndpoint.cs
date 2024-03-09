@@ -1,8 +1,6 @@
-﻿using Dadata.Model;
-using DataAccess.Sqlite;
-using Domain.Entities.Model;
+﻿using Domain.Entities.Model;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -10,8 +8,8 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
-using UseCases.Handlers.Addresses.Commands;
 using UseCases.Handlers.Addresses.Queries;
+using UseCases.Handlers.Trips.Dto;
 
 namespace TgBot.Endpoints.Trips.AddProcess;
 
@@ -20,17 +18,17 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
-    private readonly UserManager<AppUser> _userManager; 
     private readonly IMediator _mediator;
+    private readonly IHttpContextAccessor _сontextAccessor;
 
     public AddFromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
-        UserManager<AppUser> userManager, IMediator mediator)
+        IMediator mediator, IHttpContextAccessor сontextAccessor)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
-        _userManager = userManager;
         _mediator = mediator;
+        _сontextAccessor = сontextAccessor;
     }
 
     public override void Configure()
@@ -40,6 +38,8 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
+        var userId = _сontextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
@@ -68,9 +68,10 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
             return;
         }
 
-        var trip = new Trip
+        var trip = new CreateTripDto
         {
-            FromAddressId = addressId
+            FromAddressId = addressId,
+            InitiatorId = userId
         };
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
@@ -81,11 +82,13 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
                     - Дату и время отправления
                     - Количество свободных мест
                     - Стоимость поездки
+
+                    Введите - Пункт назначения
                     """;
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
-            text: "Введите - Пункт назначения",
+            text: info,
             replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 

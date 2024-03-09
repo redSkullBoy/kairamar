@@ -33,8 +33,10 @@ public class AddEndpoint : CallbackQueryEndpoint
                             - Пункт отправления
                             - Пункт назначения
                             - Дату и время отправления
+                            - Продолжительность поездки
                             - Количество свободных мест
                             - Стоимость поездки
+                            - Описание
                             """;
 
         await _botClient.SendTextMessageAsync(

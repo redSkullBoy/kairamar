@@ -38,6 +38,7 @@ public class Program
 
         builder.Services.AddSingleton<IUserBotService, UserBotService>();
         builder.Services.AddSingleton<MemoryCacheService>();
+        builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         builder.Services.AddMemoryCache();
 

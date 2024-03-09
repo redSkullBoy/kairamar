@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Entities.Model;
 using Infrastructure.Interfaces.DataAccess;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using UseCases.Handlers.Trips.Dto;
 
 namespace UseCases.Handlers.Trips.Commands;
@@ -40,7 +41,12 @@ public class CreateCommandHandler : IRequestHandler<CreateCommand, Result<TripDt
             return Result.Error("save error");
         }
 
-        var tripDto = _mapper.Map<TripDto>(newTrip);
+        var trip = await _context.Trips
+            .Include(s => s.FromAddress)
+            .Include(s => s.ToAddress)
+            .SingleAsync(s => s.Id == newTrip.Id, cancellationToken);
+
+        var tripDto = new TripDto(trip);
 
         return Result.Success(tripDto);
     }
