@@ -13,4 +13,6 @@ public interface IDbContext
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     int SaveChanges();
+
+    Task<(IReadOnlyCollection<T> value, int count)> PaginatedListAsync<T>(IQueryable<T> source, int pageNumber, int pageSize, CancellationToken ctn);
 }

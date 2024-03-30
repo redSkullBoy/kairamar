@@ -46,9 +46,9 @@ public class AllEndpoint : AppEndpoint<TripFilter, List<TripDto>>
 
         var resultGetAll = await _mediator.Send(new GetAllRequest { Value = filter }, cancellationToken);
 
-        var result = resultGetAll.Map(s => new List<TripDto>(s.Value));
+        //var result = resultGetAll.Map(s => new List<TripDto>(s.Value));
 
-        await ResultToSendAsync(result);
+        //await ResultToSendAsync(result);
 
         return;
     }

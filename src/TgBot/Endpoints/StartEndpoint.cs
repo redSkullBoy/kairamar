@@ -66,10 +66,10 @@ public class StartEndpoint : MessageEndpoint
         await _userManager.AddLoginAsync(user, info);
 
         var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
-                };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+        };
 
         await _signInManager.SignInWithClaimsAsync(user, true, claims);
         //

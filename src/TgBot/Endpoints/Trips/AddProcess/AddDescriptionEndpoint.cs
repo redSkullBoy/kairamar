@@ -1,16 +1,12 @@
-﻿using Ardalis.Result;
-using DataAccess.Sqlite;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
+﻿using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
+using TgBot.Templates;
 using UseCases.Handlers.Trips.Commands;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TgBot.Endpoints.Trips.AddProcess;
 
@@ -54,23 +50,12 @@ public class AddDescriptionEndpoint : MessageEndpoint
             Поездка сохранена
             """;
 
-        InlineKeyboardMarkup inlineKeyboard = new(
-        new[]
-        {
-            // first row
-            new []
-            {
-                InlineKeyboardButton.WithCallbackData("Поездки", "activeTrips"),
-                InlineKeyboardButton.WithCallbackData("Создать поездку", "addTrip"),
-            },
-        });
-
         await _botClient.SendTextMessageAsync(
             chatId: message!.Chat.Id,
             text: info,
-            replyMarkup: new ReplyKeyboardRemove(),
+            replyMarkup: InitiatorsTemplates.Menu(),
             cancellationToken: cancellationToken);
 
-        _userBotService.NetxState(message.From!.Id);
+        _userBotService.SetProcess(message.From.Id, UserProcesses.TripList);
     }
 }

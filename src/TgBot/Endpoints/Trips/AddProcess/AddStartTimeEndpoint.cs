@@ -77,10 +77,12 @@ public class AddStartTimeEndpoint : MessageEndpoint
             return;
         }
 
+        var trip = _cache.GetTripOrNull(message.From!.Id)!;
+
         var timeOnly = TimeOnly.Parse(formattedTime);
         var requiresTime = new TimeSpan(1, 0, 0);
         //проверка что время больше 1 часа
-        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() >= requiresTime)
+        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() >= requiresTime && trip.StartDateLocal.Day == DateTime.Now.Day)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
@@ -90,8 +92,6 @@ public class AddStartTimeEndpoint : MessageEndpoint
 
             return;
         }
-
-        var trip = _cache.GetTripOrNull(message.From!.Id)!;
 
         var dateOnly = new DateOnly(trip.StartDateLocal.Year, trip.StartDateLocal.Month, trip.StartDateLocal.Day);
         trip.StartDateLocal = dateOnly.ToDateTime(timeOnly);

@@ -3,8 +3,8 @@ using Domain.Entities.Enum;
 using Microsoft.AspNetCore.Identity;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
+using TgBot.Templates;
 
 namespace TgBot.Endpoints.Initiator;
 
@@ -49,17 +49,6 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
             text = "упс, ошибка";
         }
 
-        InlineKeyboardMarkup inlineKeyboard = new(
-                new[]
-                {
-                    // first row
-                    new []
-                    {
-                        InlineKeyboardButton.WithCallbackData("Поездки", "activeTrips"),
-                        InlineKeyboardButton.WithCallbackData("Создать поездку", "addTrip"),
-                    },
-                });
-
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
@@ -67,7 +56,7 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
-            replyMarkup: inlineKeyboard,
+            replyMarkup: InitiatorsTemplates.Menu(),
             cancellationToken: cancellationToken);
     }
 }

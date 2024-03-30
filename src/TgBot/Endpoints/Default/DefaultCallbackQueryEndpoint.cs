@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Constants;
+using TgBot.Templates;
 
 namespace TgBot.Endpoints.Default;
 
@@ -45,6 +46,7 @@ public class DefaultCallbackQueryEndpoint : CallbackQueryEndpoint
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: text,
+            replyMarkup: InitiatorsTemplates.Menu(),
             cancellationToken: cancellationToken);
     }
 }

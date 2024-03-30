@@ -17,7 +17,7 @@ public class TripDto
         FromAddressId = trip.FromAddressId;
         FromAddressName = trip.FromAddress?.Note ?? string.Empty;
         ToAddressId = trip.ToAddressId;
-        FromAddressName = trip.ToAddress?.Note ?? string.Empty;
+        ToAddressName = trip.ToAddress?.Note ?? string.Empty;
         Locale = trip.Locale;
         StartDateLocal = trip.StartDateLocal;
         EndDateLocal = trip.EndDateLocal;

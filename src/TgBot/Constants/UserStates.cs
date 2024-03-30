@@ -12,5 +12,7 @@ public static class UserStates
     public const string TripAddPrice = "TripAddPrice";
     public const string TripAddDescription = "TripAddDescription";
 
+    public const string TripActive = "TripActive";
+
     public const string Initiator = "Initiator";
 }

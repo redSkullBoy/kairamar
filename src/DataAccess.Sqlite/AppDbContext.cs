@@ -3,8 +3,6 @@ using Infrastructure.Interfaces.DataAccess;
 using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using System;
 using Domain.Entities.Common;
 
 namespace DataAccess.Sqlite;
@@ -28,6 +26,14 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
     public DbSet<Trip> Trips => Set<Trip>();
     public DbSet<TripPassenger> TripPassengers => Set<TripPassenger>();
     public DbSet<AnotherAccount> AnotherAccounts => Set<AnotherAccount>();
+
+    public async Task<(IReadOnlyCollection<T> value, int count)> PaginatedListAsync<T>(IQueryable<T> source, int pageNumber, int pageSize, CancellationToken ctn)
+    {
+        var count = await source.CountAsync(ctn);
+        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(ctn);
+
+        return (items, count);
+    }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {

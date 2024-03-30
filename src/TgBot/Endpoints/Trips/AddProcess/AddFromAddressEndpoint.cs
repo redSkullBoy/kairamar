@@ -1,6 +1,6 @@
-﻿using Domain.Entities.Model;
+﻿using DataAccess.Sqlite;
 using MediatR;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -19,16 +19,16 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
     private readonly IMediator _mediator;
-    private readonly IHttpContextAccessor _сontextAccessor;
+    private readonly UserManager<AppUser> _userManager;
 
     public AddFromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
-        IMediator mediator, IHttpContextAccessor сontextAccessor)
+        IMediator mediator, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
         _mediator = mediator;
-        _сontextAccessor = сontextAccessor;
+        _userManager = userManager;
     }
 
     public override void Configure()
@@ -38,7 +38,9 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        var userId = _сontextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = callbackQuery.From.Username;
+
+        var user = await _userManager.FindByNameAsync(username!);
 
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
@@ -71,7 +73,7 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
         var trip = new CreateTripDto
         {
             FromAddressId = addressId,
-            InitiatorId = userId
+            InitiatorId = user!.Id
         };
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));

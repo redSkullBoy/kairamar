@@ -4,12 +4,14 @@ namespace TgBot.Constants;
 
 public static class UserProcesses
 {
-    public const string AddTrip = "AddTrip";
+    public const string TripAdd = "TripAdd";
+    public const string TripList = "TripList";
+
     public const string Initiator = "Initiator";
 
     public static Dictionary<string, Dictionary<int, string>> ProcessStates = new()
     {
-        [AddTrip] = new Dictionary<int, string>
+        [TripAdd] = new Dictionary<int, string>
         {
             { 1, UserStates.TripSearchAddress },
             { 2, UserStates.TripAddFromAddress },
@@ -22,6 +24,10 @@ public static class UserProcesses
             { 9, UserStates.TripAddPrice },
             { 10, UserStates.TripAddDescription }
 
+        },
+        [TripList] = new Dictionary<int, string>
+        {
+            { 1, UserStates.TripActive },
         },
         [Initiator] = new Dictionary<int, string>
         {

@@ -49,6 +49,6 @@ public class AddEndpoint : CallbackQueryEndpoint
             text: "Введите - Пункт отправления",
             cancellationToken: cancellationToken);
 
-        _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.AddTrip);
+        _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.TripAdd);
     }
 }
