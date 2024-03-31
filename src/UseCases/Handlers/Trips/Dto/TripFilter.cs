@@ -9,4 +9,7 @@ public class TripFilter
     public DateTime StartDateLocal { get; set; }
 
     public int? RequestedSeats { get; set; } = 1;
+
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 }

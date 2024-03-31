@@ -26,7 +26,7 @@ public class IsInitiatorEndpoint : CallbackQueryEndpoint
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        string text = "Поздравляю вы стали водителем. Можете использовать следующие функции:\n";
+        string text = "Роль водитель. Можете использовать следующие функции:\n";
 
         if (callbackQuery.From == null)
             return;

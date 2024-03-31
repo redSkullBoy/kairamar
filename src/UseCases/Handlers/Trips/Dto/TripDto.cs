@@ -1,12 +1,6 @@
 ﻿using Domain.Entities.Model;
 
 namespace UseCases.Handlers.Trips.Dto;
-
-public class TripDtoList
-{
-    public List<TripDto> Value { get; set; } = new List<TripDto>();
-}
-
 public class TripDto
 {
     public TripDto() { }

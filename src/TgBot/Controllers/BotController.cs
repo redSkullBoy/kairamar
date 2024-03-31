@@ -5,7 +5,7 @@ using TgBot.Filters;
 
 namespace TgBot.Controllers;
 
-public class BotController : ControllerBase
+public class BotController(ILogger<BotController> logger) : ControllerBase
 {
     [HttpPost]
     [ValidateTelegramBot]
@@ -18,7 +18,10 @@ public class BotController : ControllerBase
         {
             await receivedContext.HandleAsync(update, cancellationToken);
         }
-        catch (Exception ex) { }
+        catch (Exception ex) 
+        {
+            logger.LogError(ex, "Ошибка");
+        }
 
         return Ok();
     }

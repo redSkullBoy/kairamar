@@ -23,6 +23,23 @@ public class CallbackQueryReceivedStrategy : BaseReceivedStrategy<CallbackQuery,
         return userState;
     }
 
+    public void ResetUserState(Update update)
+    {
+        _botUserService.SetProcess(update.CallbackQuery!.From!.Id, string.Empty);
+    }
+
+    public async Task<bool> HandlePreEndpointAsync(Update update, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", update.CallbackQuery!.Id);
+
+        var completed = await HandlePreEndpointAsync(update.CallbackQuery!, update.CallbackQuery!.Data!, update.Type, cancellationToken);
+
+        if (completed)
+            _botUserService.SetProcess(update.CallbackQuery!.From!.Id, string.Empty);
+
+        return completed;
+    }
+
     public async Task HandleEndpointAsync(Update update, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Received inline keyboard callback from: {CallbackQueryId}", update.CallbackQuery!.Id);

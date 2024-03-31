@@ -8,6 +8,7 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
+using TgBot.Templates;
 using UseCases.Handlers.Addresses.Queries;
 using UseCases.Handlers.Trips.Dto;
 
@@ -77,6 +78,8 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
         };
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
+
+        await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
 
         string info = $"""
                     - Пункт отправления: {result.Value.Note}

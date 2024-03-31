@@ -39,6 +39,15 @@ namespace TgBot.BotEndpoints.Endpoints
 
         protected virtual void State(string state)
             => Definition.UserState = state;
+        /// <summary>
+        /// Срабатывает не смотря на состояние пользователя
+        /// </summary>
+        /// <param name="patterns"></param>
+        protected virtual void PreRoutes(params string[] patterns)
+        {
+            Definition.Routes = patterns;
+            Definition.IsPreRoute = true;
+        }
     }
 }
 

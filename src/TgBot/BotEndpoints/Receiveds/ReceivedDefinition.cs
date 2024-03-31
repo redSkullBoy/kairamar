@@ -15,11 +15,11 @@ public class ReceivedDefinition
 
     public Dictionary<string, Type> UserStates { get { return _userStates; } }
 
-    public void AddEndpoints(Dictionary<string, Type> endpoints, UpdateType type)
+    public void AddEndpoints(Dictionary<string, (Type type, bool isPreRoute)> endpoints, UpdateType type)
     {
         foreach (var endpoint in endpoints)
         {
-            _endpoints.Add(KeyGenerating(endpoint.Key, type), endpoint.Value);
+            _endpoints.Add(KeyGenerating(endpoint.Key, type, endpoint.Value.isPreRoute), endpoint.Value.type);
         }
     }
 
@@ -31,9 +31,9 @@ public class ReceivedDefinition
         }
     }
 
-    public bool TryGetValueEndpoint(string key, UpdateType type, out Type? value)
+    public bool TryGetValueEndpoint(string key, UpdateType type, bool isPreRoute, out Type? value)
     {
-        if (_endpoints!.TryGetValue(KeyGenerating(key, type), out var result))
+        if (_endpoints!.TryGetValue(KeyGenerating(key, type, isPreRoute), out var result))
         {
             value = result;
             return true;
@@ -55,8 +55,8 @@ public class ReceivedDefinition
         return false;
     }
 
-    private string KeyGenerating(string key, UpdateType type)
+    private string KeyGenerating(string key, UpdateType type, bool isPreRoute)
     {
-        return $"{key}_{type}";
+        return $"{key}_{type}_{isPreRoute}";
     }
 }

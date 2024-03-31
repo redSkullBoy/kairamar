@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
@@ -23,6 +21,23 @@ public class MessageReceivedStrategy : BaseReceivedStrategy<Message, MessageEndp
         var userState = _botUserService.GetStateOrNull(update.Message!.From!.Id);
 
         return userState;
+    }
+
+    public void ResetUserState(Update update)
+    {
+        _botUserService.SetProcess(update.Message!.From!.Id, string.Empty);
+    }
+
+    public async Task<bool> HandlePreEndpointAsync(Update update, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received message type: {MessageType}", update.Message!.Text);
+
+        var completed = await HandlePreEndpointAsync(update.Message!, update.Message!.Text!, update.Type, cancellationToken);
+
+        if (completed)
+            _botUserService.SetProcess(update.CallbackQuery!.From!.Id, string.Empty);
+
+        return completed;
     }
 
     public async Task HandleEndpointAsync(Update update, CancellationToken cancellationToken)

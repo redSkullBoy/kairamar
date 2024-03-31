@@ -68,7 +68,7 @@ public static class MainExtensions
         where TEndpoint : notnull 
         where TBotType : notnull
     {
-        var regEndpoints = new Dictionary<string, Type>();
+        var regEndpoints = new Dictionary<string, (Type type, bool isPreRoute)>();
         var userStatesEndpoints = new Dictionary<string, Type>();
 
         using var scope = app.ApplicationServices.CreateScope();
@@ -84,7 +84,7 @@ public static class MainExtensions
 
             foreach (var route in routes.OrEmptyIfNull())
             {
-                regEndpoints.Add(route, endpointService.GetType());
+                regEndpoints.Add(route, (endpointService.GetType(), endpointService.Definition.IsPreRoute));
             }
 
             #region UserStates

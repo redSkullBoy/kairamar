@@ -3,6 +3,7 @@ using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
+using TgBot.Templates;
 
 namespace TgBot.Endpoints.Trips.AddProcess;
 
@@ -28,6 +29,8 @@ public class AddEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
+        await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
+
         const string info = """
                             Для создания поездки укажите следующую информацию:
                             - Пункт отправления
@@ -37,16 +40,13 @@ public class AddEndpoint : CallbackQueryEndpoint
                             - Количество свободных мест
                             - Стоимость поездки
                             - Описание
+
+                            Введите - Пункт отправления
                             """;
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
             text: info,
-            cancellationToken: cancellationToken);
-
-        await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id,
-            text: "Введите - Пункт отправления",
             cancellationToken: cancellationToken);
 
         _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.TripAdd);

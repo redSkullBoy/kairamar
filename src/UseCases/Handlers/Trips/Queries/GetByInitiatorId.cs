@@ -6,12 +6,15 @@ using UseCases.Handlers.Trips.Dto;
 
 namespace UseCases.Handlers.Trips.Queries;
 
-public class GetByInitiatorId : IRequest<Result<TripDtoList>>
+public class GetByInitiatorId : IRequest<PaginatedResult<TripDto>>
 {
     public string Id { get; set; } = default!;
+
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }
 
-internal class GetByInitiatorIdHandler : IRequestHandler<GetByInitiatorId, Result<TripDtoList>>
+internal class GetByInitiatorIdHandler : IRequestHandler<GetByInitiatorId, PaginatedResult<TripDto>>
 {
     private readonly IDbContext _dbContext;
 
@@ -20,10 +23,8 @@ internal class GetByInitiatorIdHandler : IRequestHandler<GetByInitiatorId, Resul
         _dbContext = dbContext;
     }
 
-    public async Task<Result<TripDtoList>> Handle(GetByInitiatorId request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<TripDto>> Handle(GetByInitiatorId request, CancellationToken cancellationToken)
     {
-        var result = new TripDtoList();
-
         var query = _dbContext.Trips.AsNoTracking();
 
         var trips = await query.Where(x => x.InitiatorId == request.Id)
@@ -33,13 +34,13 @@ internal class GetByInitiatorIdHandler : IRequestHandler<GetByInitiatorId, Resul
 
         if (!trips.Any())
         {
-            return Result.NotFound();
+            return PaginatedResult<TripDto>.NotFound();
         }
 
-        var tripDtos = trips.Select(s => new TripDto(s));
+        var tripDb = await _dbContext.PaginatedListAsync(query, request.PageNumber, request.PageSize, cancellationToken);
 
-        result.Value.AddRange(tripDtos);
+        var tripDtos = tripDb.value.Select(s => new TripDto(s)).ToList();
 
-        return result;
+        return PaginatedResult<TripDto>.Success(tripDtos, tripDb.count, request.PageNumber, request.PageSize);
     }
 }

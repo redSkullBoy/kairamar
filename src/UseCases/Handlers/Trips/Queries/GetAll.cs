@@ -22,8 +22,6 @@ internal class GetAllRequestHandler : IRequestHandler<GetAllRequest, PaginatedRe
 
     public async Task<PaginatedResult<TripDto>> Handle(GetAllRequest request, CancellationToken cancellationToken)
     {
-        var result = new TripDtoList();
-
         var startPeriod = request.Value.StartDateLocal.AddDays(1);
 
         var query = _dbContext.Trips.AsNoTracking()
@@ -33,10 +31,10 @@ internal class GetAllRequestHandler : IRequestHandler<GetAllRequest, PaginatedRe
                                         && x.StartDateLocal >= request.Value.StartDateLocal
                                         && x.StartDateLocal <= startPeriod);
 
-        var tripDb = await _dbContext.PaginatedListAsync(query, 1, 10, cancellationToken);
+        var tripDb = await _dbContext.PaginatedListAsync(query, request.Value.PageNumber, request.Value.PageSize, cancellationToken);
 
         var tripDtos = tripDb.value.Select(s => new TripDto(s)).ToList();
 
-        return PaginatedResult<TripDto>.Success(tripDtos, tripDb.count, 1, 10);
+        return PaginatedResult<TripDto>.Success(tripDtos, tripDb.count, request.Value.PageNumber, request.Value.PageSize);
     }
 }

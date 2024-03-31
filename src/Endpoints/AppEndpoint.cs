@@ -36,8 +36,10 @@ public class AppEndpoint<TRequest, TResponse> : Endpoint<TRequest, TResponse> wh
                 await SendForbiddenAsync();
                 break;
             case ResultStatus.Invalid:
-                result.ValidationErrors.ForEach(e =>
-                    ValidationFailures.Add(new(e.Identifier, e.ErrorMessage)));
+                foreach(var errs in result.ValidationErrors)
+                {
+                    ValidationFailures.Add(new(errs.Identifier, errs.ErrorMessage));
+                }
 
                 await HttpContext.Response.SendErrorsAsync(ValidationFailures);
                 break;

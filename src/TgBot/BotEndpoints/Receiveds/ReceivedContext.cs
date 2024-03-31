@@ -32,6 +32,13 @@ public class ReceivedContext
         {
             var userState = contextStrategy.GetUserState(update);
 
+            //для Предварительные маршруты
+            var completed = await contextStrategy.HandlePreEndpointAsync(update, cancellationToken);
+            if (completed)
+            {
+                return;
+            }
+
             //Если соостояния нет, обрабатываеем через Endpoint
             if (string.IsNullOrWhiteSpace(userState))
             {

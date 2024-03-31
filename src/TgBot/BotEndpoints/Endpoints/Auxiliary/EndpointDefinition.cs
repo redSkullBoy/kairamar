@@ -8,5 +8,7 @@
         public string? UserState { get; internal set; }
 
         public string[]? Routes { get; internal set; }
+
+        public bool IsPreRoute { get; internal set; }
     }
 }

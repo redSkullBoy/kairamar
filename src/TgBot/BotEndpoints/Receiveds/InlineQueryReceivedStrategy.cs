@@ -18,9 +18,26 @@ public class InlineQueryReceivedStrategy : BaseReceivedStrategy<InlineQuery, Inl
 
     public string? GetUserState(Update update)
     {
-        var userState = _botUserService.GetStateOrNull(update.CallbackQuery!.From!.Id);
+        var userState = _botUserService.GetStateOrNull(update.InlineQuery!.From!.Id);
 
         return userState;
+    }
+
+    public void ResetUserState(Update update)
+    {
+        _botUserService.SetProcess(update.InlineQuery!.From!.Id, string.Empty);
+    }
+
+    public async Task<bool> HandlePreEndpointAsync(Update update, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Received inline keyboard callback from: {InlineQuery}", update.InlineQuery!.Id);
+
+        var completed = await HandlePreEndpointAsync(update.InlineQuery!, update.InlineQuery!.Query!, update.Type, cancellationToken);
+
+        if (completed)
+            _botUserService.SetProcess(update.CallbackQuery!.From!.Id, string.Empty);
+
+        return completed;
     }
 
     public async Task HandleEndpointAsync(Update update, CancellationToken cancellationToken)
