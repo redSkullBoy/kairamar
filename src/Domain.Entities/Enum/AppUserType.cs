@@ -5,7 +5,7 @@ public enum AppUserType
     /// <summary>
     /// Попутчик
     /// </summary>
-    Companion = 0,
+    Passenger = 0,
 
     /// <summary>
     /// Водитель

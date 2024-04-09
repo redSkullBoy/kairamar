@@ -12,9 +12,9 @@ using TgBot.Templates;
 using UseCases.Handlers.Addresses.Queries;
 using UseCases.Handlers.Trips.Dto;
 
-namespace TgBot.Endpoints.Trips.AddProcess;
+namespace TgBot.Endpoints.Trips.FindProcess;
 
-public class AddFromAddressEndpoint : CallbackQueryEndpoint
+public class FromAddressEndpoint : CallbackQueryEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
@@ -22,7 +22,7 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
     private readonly IMediator _mediator;
     private readonly UserManager<AppUser> _userManager;
 
-    public AddFromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
+    public FromAddressEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
         IMediator mediator, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
@@ -34,15 +34,11 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
 
     public override void Configure()
     {
-        State(UserStates.TripAddFromAddress);
+        State(UserStates.TripFindFromAddress);
     }
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        var username = callbackQuery.From.Username;
-
-        var user = await _userManager.FindByNameAsync(username!);
-
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
@@ -71,31 +67,16 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
             return;
         }
 
-        var trip = new CreateTripDto
+        var filter = new TripFilter
         {
-            FromAddressId = addressId,
-            InitiatorId = user!.Id
+            FromAddressId = addressId
         };
 
-        _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
+        _cache.SetTripFilter(callbackQuery.From!.Id, filter, TimeSpan.FromMinutes(5));
 
-        //await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
+        //await _botClient.SendPassengerMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
 
-        string info = $"""
-                    - Пункт отправления: {result.Value.Note}
-                    - Пункт назначения
-                    - Дату и время отправления
-                    - Количество свободных мест
-                    - Стоимость поездки
-
-                    Введите - Пункт назначения
-                    """;
-
-        await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id,
-            text: info,
-            replyMarkup: new ReplyKeyboardRemove(),
-            cancellationToken: cancellationToken);
+        await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт назначения", result.Value.Note);
 
         _userBotService.NetxState(callbackQuery.From!.Id);
     }

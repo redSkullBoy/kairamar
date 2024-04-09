@@ -6,14 +6,14 @@ using Telegram.Bot.Types;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.Templates;
 
-namespace TgBot.Endpoints.Initiator;
+namespace TgBot.Endpoints.Passenger;
 
-public class IsInitiatorEndpoint : MessageEndpoint
+public class IsPassengerEndpoint : MessageEndpoint
 {
     private readonly ITelegramBotClient _botClient;
     private readonly UserManager<AppUser> _userManager;
 
-    public IsInitiatorEndpoint(ITelegramBotClient botClient, UserManager<AppUser> userManager)
+    public IsPassengerEndpoint(ITelegramBotClient botClient, UserManager<AppUser> userManager)
     {
         _botClient = botClient;
         _userManager = userManager;
@@ -21,12 +21,12 @@ public class IsInitiatorEndpoint : MessageEndpoint
 
     public override void Configure()
     {
-        PreRoutes("/userisinitiator");
+        PreRoutes("/userispassenger");
     }
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
     {
-        string text = "Роль водитель. Можете использовать следующие функции:\n";
+        string text = "Роль пассажир. Можете использовать следующие функции:\n";
 
         if (message.From == null)
             return;
@@ -40,7 +40,7 @@ public class IsInitiatorEndpoint : MessageEndpoint
         if (user == null)
             return;
 
-        user.UserType = AppUserType.Initiator;
+        user.UserType = AppUserType.Passenger;
 
         var result = await _userManager.UpdateAsync(user);
 
@@ -49,10 +49,14 @@ public class IsInitiatorEndpoint : MessageEndpoint
             text = "упс, ошибка";
         }
 
+        //await _botClient.AnswerCallbackQueryAsync(
+        //    callbackQueryId: callbackQuery.Id,
+        //    cancellationToken: cancellationToken);
+
         await _botClient.SendTextMessageAsync(
             chatId: message!.Chat.Id,
             text: text,
-            replyMarkup: InitiatorsTemplates.Menu(),
+            replyMarkup: PassengersTemplates.Menu(),
             cancellationToken: cancellationToken);
     }
 }

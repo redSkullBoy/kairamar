@@ -35,7 +35,7 @@ public class MessageReceivedStrategy : BaseReceivedStrategy<Message, MessageEndp
         var completed = await HandlePreEndpointAsync(update.Message!, update.Message!.Text!, update.Type, cancellationToken);
 
         if (completed)
-            _botUserService.SetProcess(update.CallbackQuery!.From!.Id, string.Empty);
+            _botUserService.SetProcess(update.Message!.From!.Id, string.Empty);
 
         return completed;
     }

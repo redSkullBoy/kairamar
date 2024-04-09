@@ -26,6 +26,7 @@ internal class GetAllRequestHandler : IRequestHandler<GetAllRequest, PaginatedRe
 
         var query = _dbContext.Trips.AsNoTracking()
                                 .Include(x => x.TripPassenger)
+                                .Include(x => x.Initiator)
                                 .Where(x => x.FromAddressId == request.Value.FromAddressId 
                                         && x.ToAddressId == request.Value.ToAddressId
                                         && x.StartDateLocal >= request.Value.StartDateLocal

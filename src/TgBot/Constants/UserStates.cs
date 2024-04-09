@@ -2,7 +2,8 @@
 
 public static class UserStates
 {
-    public const string TripSearchAddress = "TripSearchAddress";
+    public const string SearchAddress = "SearchAddress";
+
     public const string TripAddFromAddress = "TripAddFromAddress";
     public const string TripAddToAddress = "TripAddToAddress";
     public const string TripAddStartDate = "TripAddStartDate";
@@ -15,4 +16,10 @@ public static class UserStates
     public const string TripActive = "TripActive";
 
     public const string Initiator = "Initiator";
+
+    public const string TripFindFromAddress = "TripFindFromAddress";
+    public const string TripFindToAddress = "TripFindToAddress";
+    public const string TripFindStartDate = "TripFindStartDate";
+    public const string TripFindStartTime = "TripFindStartTime";
+    public const string TripFindList = "TripFindList";
 }

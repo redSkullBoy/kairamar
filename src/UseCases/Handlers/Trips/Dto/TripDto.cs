@@ -20,6 +20,7 @@ public class TripDto
         Description = trip.Description;
         Price = trip.Price;
         InitiatorId = trip.InitiatorId;
+        InitiatorName = trip.Initiator?.UserName;
     }
 
     public int Id { get; set; }
@@ -44,4 +45,5 @@ public class TripDto
     public decimal Price { get; set; }
 
     public string InitiatorId { get; set; } = string.Empty;
+    public string? InitiatorName { get; set; } = null;
 }

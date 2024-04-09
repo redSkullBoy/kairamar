@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.Extensions;
 
@@ -24,7 +23,7 @@ public class StartEndpoint : MessageEndpoint
 
     public override void Configure()
     {
-        Routes("/start");
+        PreRoutes("/start");
     }
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
@@ -77,25 +76,8 @@ public class StartEndpoint : MessageEndpoint
 
         await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
-                        text: $"Привет, {prettyUserName}!!!",
+                        text: $"Привет, {prettyUserName}!!!\nВыберите роль в меню",
                         cancellationToken: cancellationToken);
-
-        var inlineKeyboard = new InlineKeyboardMarkup(
-                new[]
-                {
-            // first row
-            new []
-            {
-                InlineKeyboardButton.WithCallbackData("Водитель", "userIsInitiator"),
-                InlineKeyboardButton.WithCallbackData("Попутчик", "userIsCompanion"),
-            },
-                });
-
-        await _botClient.SendTextMessageAsync(
-                            chatId: message.Chat.Id,
-                            text: "Выберите роль",
-                            replyMarkup: inlineKeyboard,
-                            cancellationToken: cancellationToken);
 
         return;
     }

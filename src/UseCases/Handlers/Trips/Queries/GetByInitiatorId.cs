@@ -27,15 +27,9 @@ internal class GetByInitiatorIdHandler : IRequestHandler<GetByInitiatorId, Pagin
     {
         var query = _dbContext.Trips.AsNoTracking();
 
-        var trips = await query.Where(x => x.InitiatorId == request.Id)
+        query = query.Where(x => x.InitiatorId == request.Id)
             .Include(x => x.FromAddress)
-            .Include(x => x.ToAddress)
-            .ToListAsync(cancellationToken);
-
-        if (!trips.Any())
-        {
-            return PaginatedResult<TripDto>.NotFound();
-        }
+            .Include(x => x.ToAddress);
 
         var tripDb = await _dbContext.PaginatedListAsync(query, request.PageNumber, request.PageSize, cancellationToken);
 

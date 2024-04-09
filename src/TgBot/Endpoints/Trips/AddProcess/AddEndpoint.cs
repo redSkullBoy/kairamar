@@ -29,7 +29,7 @@ public class AddEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
+        //await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
 
         const string info = """
                             Для создания поездки укажите следующую информацию:

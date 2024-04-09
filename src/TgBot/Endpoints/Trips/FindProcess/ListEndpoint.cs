@@ -9,28 +9,31 @@ using Microsoft.AspNetCore.Identity;
 using TgBot.Templates;
 using TgBot.Constants;
 using Telegram.Bot.Types.ReplyMarkups;
+using TgBot.Services;
 
-namespace TgBot.Endpoints.Trips.ListProcess;
+namespace TgBot.Endpoints.Trips.FindProcess;
 
-public class ActiveEndpoint : CallbackQueryEndpoint
+public class ListEndpoint : CallbackQueryEndpoint
 {
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly IMediator _mediator;
     private readonly UserManager<AppUser> _userManager;
+    private readonly MemoryCacheService _cache;
 
-    public ActiveEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, IMediator mediator, UserManager<AppUser> userManager)
+    public ListEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, IMediator mediator, UserManager<AppUser> userManager, MemoryCacheService cache)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _mediator = mediator;
         _userManager = userManager;
+        _cache = cache;
     }
 
     public override void Configure()
     {
-        Routes("activeTrips");
-        State(UserStates.TripActive);
+        Routes("findList");
+        State(UserStates.TripFindList);
     }
 
     public override async Task HandleAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
@@ -44,51 +47,38 @@ public class ActiveEndpoint : CallbackQueryEndpoint
         if (pageNumber == 0)
             pageNumber = 1;
 
-        var username = callbackQuery.From.Username;
+        var filter = _cache.GetTripFilterOrNull(callbackQuery.From!.Id);
 
-        if (username == null)
+        if (filter == null)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: callbackQuery.Message!.Chat.Id,
-                text: "Пользователь не найден. Перейдите на /start",
+                text: "Филтр не найден",
+                replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
             return;
         }
 
-        var user = await _userManager.FindByNameAsync(username!);
+        filter.PageNumber = pageNumber;
 
-        if (user == null)
-        {
-            await _botClient.SendTextMessageAsync(
-                chatId: callbackQuery.Message!.Chat.Id,
-                text: "Пользователь не найден. Перейдите на /start",
-                cancellationToken: cancellationToken);
+        var result = await _mediator.Send(new GetAllRequest { Value = filter });
 
-            return;
-        }
-
-        var result = await _mediator.Send(new GetByInitiatorId { Id = user.Id, PageNumber = pageNumber });
-
-        if (!result.IsSuccess)
+        if (!result.IsSuccess || result.Value.Count == 0)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: callbackQuery.Message!.Chat.Id,
                 text: "Поездок не найдено",
-                replyMarkup: InitiatorsTemplates.Menu(),
+                replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 
             return;
         }
 
-        await _botClient.SendTextMessageAsync(
-                chatId: callbackQuery.Message!.Chat.Id,
-                text: "Мои поездки",
-                cancellationToken: cancellationToken);
-
         foreach (var item in result.Value)
         {
             var r = $"""
+                - Пользователь: @{item.InitiatorName}
                 - Пункт отправления: {item.FromAddressName}
                 - Пункт назначения: {item.ToAddressName}
                 - Дату и время отправления: {item.StartDateLocal.ToString("f")}
@@ -144,7 +134,5 @@ public class ActiveEndpoint : CallbackQueryEndpoint
             text: $"страница {result.PageNumber}",
             replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
-
-        _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.TripList);
     }
 }

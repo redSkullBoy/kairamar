@@ -26,7 +26,7 @@ public class SearchEndpoint :  MessageEndpoint
 
     public override void Configure()
     {
-        State(UserStates.TripSearchAddress);
+        State(UserStates.SearchAddress);
     }
 
     public override async Task HandleAsync(Message message, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ public class SearchEndpoint :  MessageEndpoint
 
             var inlineKeyboard = new InlineKeyboardMarkup(keyboardButtons);
 
-            string text = "Выберите пункт отправления из списка";
+            string text = "Выберите адресс из списка";
 
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
