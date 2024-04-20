@@ -49,10 +49,12 @@ public class Program
         builder.Services.AddHostedService<ConfigureWebhook>();
 
         builder.Services
-                .AddControllers()
+                .AddControllersWithViews()
                 .AddNewtonsoftJson();
 
         var app = builder.Build();
+
+        app.UseHttpsRedirection();
 
         app.UseBotEndpoint();
 
@@ -64,7 +66,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Bot}/{action=Post}");
+            pattern: "{controller=Home}/{action=Index}");
 
         app.Run();
     }
