@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /src/Api/kairamar.db-shm
 /src/Api/kairamar.db-wal
 /src/TgBot/appsettings.Development.json
+/src/TgBot/appsettings.json
