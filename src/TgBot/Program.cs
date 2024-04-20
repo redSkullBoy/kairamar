@@ -66,7 +66,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}");
+            pattern: "{controller=Bot}/{action=Post}");
 
         app.Run();
     }
