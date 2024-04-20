@@ -40,6 +40,7 @@ public class DadataRefineService : IDataRefineService
             {
                 var addressDto = new AddressDataDto
                 {
+                    Value = suggest.value,
                     Note = suggest.unrestricted_value,
                     PostalCode = suggest.data.postal_code,
                     Country = suggest.data.country,

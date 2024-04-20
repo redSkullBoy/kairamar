@@ -3,6 +3,7 @@ using System;
 using DataAccess.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Sqlite.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240414150959_mig202404141809")]
+    partial class mig202404141809
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -38,9 +41,6 @@ namespace DataAccess.Sqlite.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("LastAddressId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .HasColumnType("TEXT");
@@ -82,8 +82,6 @@ namespace DataAccess.Sqlite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LastAddressId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -354,6 +352,33 @@ namespace DataAccess.Sqlite.Migrations
                     b.ToTable("Addresses");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Model.AnotherAccount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("AnotherAccounts");
+                });
+
             modelBuilder.Entity("Domain.Entities.Model.Trip", b =>
                 {
                     b.Property<int>("Id")
@@ -570,13 +595,13 @@ namespace DataAccess.Sqlite.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccess.Sqlite.AppUser", b =>
+            modelBuilder.Entity("Domain.Entities.Model.AnotherAccount", b =>
                 {
-                    b.HasOne("Domain.Entities.Model.Address", "LastAddress")
-                        .WithMany()
-                        .HasForeignKey("LastAddressId");
+                    b.HasOne("DataAccess.Sqlite.AppUser", "AppUser")
+                        .WithMany("AnotherAccounts")
+                        .HasForeignKey("AppUserId");
 
-                    b.Navigation("LastAddress");
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Domain.Entities.Model.Trip", b =>
@@ -672,6 +697,11 @@ namespace DataAccess.Sqlite.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DataAccess.Sqlite.AppUser", b =>
+                {
+                    b.Navigation("AnotherAccounts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Model.Trip", b =>

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
@@ -53,7 +54,7 @@ public class AddDescriptionEndpoint : MessageEndpoint
         await _botClient.SendTextMessageAsync(
             chatId: message!.Chat.Id,
             text: info,
-            replyMarkup: InitiatorsTemplates.Menu(),
+            replyMarkup: new ReplyKeyboardRemove(),
             cancellationToken: cancellationToken);
 
         _userBotService.SetProcess(message.From.Id, UserProcesses.TripList);

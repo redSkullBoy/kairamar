@@ -8,6 +8,7 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
+using UseCases.Handlers.Addresses.Queries;
 using UseCases.Handlers.Trips.Dto;
 
 namespace TgBot.Endpoints.Trips.FindProcess;
@@ -51,10 +52,23 @@ public class ToAddressEndpoint : CallbackQueryEndpoint
 
             return;
         }
+        var result = await _mediator.Send(new GetByIdRequest { Id = addressId }, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: callbackQuery.Message!.Chat.Id,
+                text: "Ошибка при получение адреса",
+                replyMarkup: new ReplyKeyboardRemove(),
+                cancellationToken: cancellationToken);
+
+            return;
+        }
 
         var filter = _cache.GetTripFilterOrNull(callbackQuery.From!.Id) ?? new TripFilter();
 
-        filter.ToAddressId = int.Parse(callbackQuery.Data!);
+        filter.ToAddressId = addressId;
+        filter.ToAddress = result.Value.Value;
 
         _cache.SetTripFilter(callbackQuery.From!.Id, filter, TimeSpan.FromMinutes(5));
 

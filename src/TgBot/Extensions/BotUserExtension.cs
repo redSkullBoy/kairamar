@@ -12,8 +12,8 @@ public static class BotUserExtension
             names.Add(messageNewChatMember.FirstName);
         if (!string.IsNullOrWhiteSpace(messageNewChatMember.LastName))
             names.Add(messageNewChatMember.LastName);
-        if (!string.IsNullOrWhiteSpace(messageNewChatMember.Username))
-            names.Add("(@" + messageNewChatMember.Username + ")");
+        //if (!string.IsNullOrWhiteSpace(messageNewChatMember.Username))
+        //    names.Add("(@" + messageNewChatMember.Username + ")");
 
         return string.Join(" ", names);
     }

@@ -86,7 +86,7 @@ public class AddStartTimeEndpoint : MessageEndpoint
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
-                text: "Время должно быть на час больше",
+                text: "Время должно быть больше текущего",
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 

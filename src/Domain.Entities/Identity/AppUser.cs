@@ -1,7 +1,6 @@
 ﻿using Domain.Entities.Enum;
 using Domain.Entities.Model;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.ObjectModel;
 
 namespace DataAccess.Sqlite;
 
@@ -13,5 +12,6 @@ public class AppUser : IdentityUser
 
     public AppUserType UserType { get; set; }
 
-    public Collection<AnotherAccount>? AnotherAccounts { get; set; }
+    public int? LastAddressId { get; set; }
+    public Address? LastAddress { get; set; } = null;
 }

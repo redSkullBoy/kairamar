@@ -6,10 +6,10 @@ namespace Domain.Entities.Model;
 public class Trip : BaseAuditableEntity
 {
     public int FromAddressId { get; set; }
-    public Address? FromAddress { get; set; }
+    public Address? FromAddress { get; set; } = null;
 
     public int ToAddressId { get; set; }
-    public Address? ToAddress { get; set; }
+    public Address? ToAddress { get; set; } = null;
 
     public string Locale { get; set; } = string.Empty;
 

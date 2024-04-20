@@ -9,9 +9,9 @@ public class TripDto
     {
         Id = trip.Id;
         FromAddressId = trip.FromAddressId;
-        FromAddressName = trip.FromAddress?.Note ?? string.Empty;
+        FromAddressName = trip.FromAddress?.Value ?? string.Empty;
         ToAddressId = trip.ToAddressId;
-        ToAddressName = trip.ToAddress?.Note ?? string.Empty;
+        ToAddressName = trip.ToAddress?.Value ?? string.Empty;
         Locale = trip.Locale;
         StartDateLocal = trip.StartDateLocal;
         EndDateLocal = trip.EndDateLocal;

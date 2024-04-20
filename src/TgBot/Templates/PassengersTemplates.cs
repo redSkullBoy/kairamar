@@ -15,6 +15,10 @@ public static class PassengersTemplates
                     {
                         InlineKeyboardButton.WithCallbackData("Найти поездку", "findTrips"),
                     },
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("Актуальные поездки по адресу", "findTripsFrom"),
+                    },
                 });
 
         return inlineKeyboard;

@@ -40,7 +40,7 @@ public class SearchEndpoint :  MessageEndpoint
             var keyboardButtons = result.Value.Select(item =>
                 new InlineKeyboardButton[]
                 {
-                    InlineKeyboardButton.WithCallbackData(item.Note, item.Id.ToString())
+                    InlineKeyboardButton.WithCallbackData(item.Value, item.Id.ToString())
                 }
             ).ToArray();
 

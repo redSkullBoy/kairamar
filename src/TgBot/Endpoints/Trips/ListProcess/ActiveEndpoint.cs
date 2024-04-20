@@ -141,7 +141,7 @@ public class ActiveEndpoint : CallbackQueryEndpoint
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
-            text: $"страница {result.PageNumber}",
+            text: $"страница {result.PageNumber} из {result.TotalPages}",
             replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
 

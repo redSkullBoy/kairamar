@@ -76,7 +76,7 @@ public class StartEndpoint : MessageEndpoint
 
         await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
-                        text: $"Привет, {prettyUserName}!!!\nВыберите роль в меню",
+                        text: $"Привет, {prettyUserName}!!! \nЯ бот по подбору поездок. \nЕсть две роли: водитель, пассажир. \nВыберите роль в меню",
                         cancellationToken: cancellationToken);
 
         return;

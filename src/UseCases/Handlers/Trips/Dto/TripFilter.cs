@@ -3,8 +3,10 @@
 public class TripFilter
 {
     public int FromAddressId { get; set; }
+    public string FromAddress { get; set; } = default!;
 
     public int ToAddressId { get; set; }
+    public string ToAddress { get; set; } = default!;
 
     public DateTime StartDateLocal { get; set; }
 

@@ -4,6 +4,8 @@ public class AddressDto
 {
     public int Id { get; set; }
 
+    public string Value { get; set; } = string.Empty;
+
     public string Note { get; set; } = string.Empty;
 
     public string PostalCode { get; set; } = string.Empty;

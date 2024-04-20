@@ -29,8 +29,6 @@ public class FindEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        //await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
-
         await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт отправления");
 
         _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.TripFind);

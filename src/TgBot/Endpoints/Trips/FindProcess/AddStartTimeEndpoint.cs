@@ -8,7 +8,6 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
-using TgBot.Templates;
 
 namespace TgBot.Endpoints.Trips.FindProcess;
 
@@ -99,6 +98,14 @@ public class StartTimeEndpoint : MessageEndpoint
 
         _cache.SetTripFilter(message.From!.Id, filter, TimeSpan.FromMinutes(5));
 
+        var user = await _userManager.FindByNameAsync(message.From.Username!);
+
+        if (user != null)
+        {
+            user.LastAddressId = filter.ToAddressId;
+            await _userManager.UpdateAsync(user);
+        }
+
         InlineKeyboardMarkup inlineKeyboard = new(
                 new[]
                 {
@@ -109,8 +116,18 @@ public class StartTimeEndpoint : MessageEndpoint
                     },
                 });
 
-        await _botClient.SendTripFindInfo(message!.Chat.Id, cancellationToken, "Поиск", filter.FromAddressId.ToString(),
-            filter.ToAddressId.ToString(), filter.StartDateLocal.ToString("f"), inlineKeyboard);
+        string info = $"""
+                            Данные поиска:
+                            - Пункт отправления {filter.FromAddress}
+                            - Пункт назначения {filter.ToAddress}
+                            - Дату и время отправления {filter.StartDateLocal}
+                            """;
+
+        await _botClient.SendTextMessageAsync(
+            chatId: message!.Chat.Id,
+            text: info,
+            replyMarkup: inlineKeyboard,
+            cancellationToken: cancellationToken);
 
         _userBotService.NetxState(message.From!.Id);
     }

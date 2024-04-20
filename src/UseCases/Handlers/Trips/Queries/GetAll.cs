@@ -27,10 +27,32 @@ internal class GetAllRequestHandler : IRequestHandler<GetAllRequest, PaginatedRe
         var query = _dbContext.Trips.AsNoTracking()
                                 .Include(x => x.TripPassenger)
                                 .Include(x => x.Initiator)
-                                .Where(x => x.FromAddressId == request.Value.FromAddressId 
-                                        && x.ToAddressId == request.Value.ToAddressId
-                                        && x.StartDateLocal >= request.Value.StartDateLocal
+                                .Include(s => s.FromAddress)
+                                .Include(s => s.ToAddress)
+                                .Where(x => x.StartDateLocal >= request.Value.StartDateLocal
                                         && x.StartDateLocal <= startPeriod);
+
+        var from = await _dbContext.Addresses.FirstOrDefaultAsync(s => s.Id == request.Value.FromAddressId, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(from?.City))
+        {
+            query = query.Where(s => s.FromAddress.Settlement == from.City || s.FromAddress.City == from.City);
+        }
+        if (!string.IsNullOrWhiteSpace(from?.Settlement))
+        {
+            query = query.Where(s => s.FromAddress.Settlement == from.Settlement || s.FromAddress.City == from.Settlement);
+        }
+
+        var to = await _dbContext.Addresses.FirstOrDefaultAsync(s => s.Id == request.Value.ToAddressId, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(from?.City))
+        {
+            query = query.Where(s => s.FromAddress.Settlement == from.City || s.FromAddress.City == from.City);
+        }
+        if (!string.IsNullOrWhiteSpace(from?.Settlement))
+        {
+            query = query.Where(s => s.FromAddress.Settlement == from.Settlement || s.FromAddress.City == from.Settlement);
+        }
 
         var tripDb = await _dbContext.PaginatedListAsync(query, request.Value.PageNumber, request.Value.PageSize, cancellationToken);
 

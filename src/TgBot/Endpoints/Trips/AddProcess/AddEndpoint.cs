@@ -41,7 +41,7 @@ public class AddEndpoint : CallbackQueryEndpoint
                             - Стоимость поездки
                             - Описание
 
-                            Введите - Пункт отправления
+                            Введите - Пункт отправления: город, деревня
                             """;
 
         await _botClient.SendTextMessageAsync(

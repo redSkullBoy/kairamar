@@ -69,14 +69,13 @@ public class FromAddressEndpoint : CallbackQueryEndpoint
 
         var filter = new TripFilter
         {
-            FromAddressId = addressId
+            FromAddressId = addressId,
+            FromAddress = result.Value.Value,
         };
 
         _cache.SetTripFilter(callbackQuery.From!.Id, filter, TimeSpan.FromMinutes(5));
 
-        //await _botClient.SendPassengerMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
-
-        await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт назначения", result.Value.Note);
+        await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт назначения", result.Value.Value);
 
         _userBotService.NetxState(callbackQuery.From!.Id);
     }

@@ -9,6 +9,8 @@ public class Address : BaseAuditableEntity
 
     public LocationTypeEnum FiasLevel { get; set; }
 
+    public string Value { get; set; } = string.Empty;
+
     public string? Note { get; set; }
 
     public string? PostalCode { get; set; }

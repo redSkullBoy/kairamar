@@ -1,12 +1,8 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot;
 using TgBot.BotEndpoints.Endpoints;
-using TgBot.BotEndpoints.Services;
 using MediatR;
 using UseCases.Handlers.Trips.Queries;
-using DataAccess.Sqlite;
-using Microsoft.AspNetCore.Identity;
-using TgBot.Templates;
 using TgBot.Constants;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.Services;
@@ -15,18 +11,14 @@ namespace TgBot.Endpoints.Trips.FindProcess;
 
 public class ListEndpoint : CallbackQueryEndpoint
 {
-    private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly IMediator _mediator;
-    private readonly UserManager<AppUser> _userManager;
     private readonly MemoryCacheService _cache;
 
-    public ListEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, IMediator mediator, UserManager<AppUser> userManager, MemoryCacheService cache)
+    public ListEndpoint(ITelegramBotClient botClient, IMediator mediator, MemoryCacheService cache)
     {
-        _userBotService = userBotService;
         _botClient = botClient;
         _mediator = mediator;
-        _userManager = userManager;
         _cache = cache;
     }
 
@@ -75,6 +67,11 @@ public class ListEndpoint : CallbackQueryEndpoint
             return;
         }
 
+        await _botClient.SendTextMessageAsync(
+                chatId: callbackQuery.Message!.Chat.Id,
+                text: "Результат поиска",
+                cancellationToken: cancellationToken);
+
         foreach (var item in result.Value)
         {
             var r = $"""
@@ -84,6 +81,7 @@ public class ListEndpoint : CallbackQueryEndpoint
                 - Дату и время отправления: {item.StartDateLocal.ToString("f")}
                 - Количество свободных мест: {item.RequestedSeats}
                 - Стоимость поездки: {item.Price}
+                - Описание: {item.Description}
                 """;
 
             await _botClient.SendTextMessageAsync(
@@ -131,7 +129,7 @@ public class ListEndpoint : CallbackQueryEndpoint
 
         await _botClient.SendTextMessageAsync(
             chatId: callbackQuery.Message!.Chat.Id,
-            text: $"страница {result.PageNumber}",
+            text: $"страница {result.PageNumber} из {result.TotalPages}",
             replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken);
     }
