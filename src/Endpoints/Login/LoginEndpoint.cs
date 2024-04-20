@@ -1,4 +1,4 @@
-﻿using DataAccess.Sqlite;
+﻿using Domain.Entities;
 using Endpoints.Auth;
 using FastEndpoints;
 using Infrastructure.Interfaces.DataAccess;

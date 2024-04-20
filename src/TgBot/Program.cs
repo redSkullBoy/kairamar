@@ -1,5 +1,4 @@
 using ApplicationServices.Implementation;
-using DataAccess.Sqlite;
 using Infrastructure.Implementation;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -21,7 +20,9 @@ public class Program
         var botConfigurationSection = builder.Configuration.GetSection(BotConfiguration.Configuration);
         builder.Services.Configure<BotConfiguration>(botConfigurationSection);
         // Add project modules
-        builder.Services.RegisterModule<DataAccessModule>(builder.Configuration);
+        //builder.Services.RegisterModule<DataAccess.Sqlite.DataAccessModule>(builder.Configuration);
+        builder.Services.RegisterModule<DataAccess.PostgreSQL.DataAccessModule>(builder.Configuration);
+
         builder.Services.RegisterModule<InfrastructureModule>(builder.Configuration);
         builder.Services.RegisterModule<ApplicationServicesModule>(builder.Configuration);
         builder.Services.RegisterModule<UseCasesModule>(builder.Configuration);

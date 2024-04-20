@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Domain.Entities;
 using Infrastructure.Interfaces.Exceptions;
 
-namespace DataAccess.Sqlite;
+namespace DataAccess.PostgreSQL;
 
 public class IdentityTokenClaimService : ITokenClaimsService
 {

@@ -1,5 +1,6 @@
 ﻿using Ardalis.Result;
 using DataAccess.Sqlite;
+using Domain.Entities;
 using Domain.Entities.Model;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

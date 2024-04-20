@@ -6,19 +6,16 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Entities.Common;
 using Domain.Entities;
 
-namespace DataAccess.Sqlite;
+namespace DataAccess.PostgreSQL;
 
 public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IDateTime _dateTime;
-    private readonly IDomainEventService _domainEventService;
 
     public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
             : base(options)
     {
-        //Database.EnsureDeleted();   // удаляем бд со старой схемой
-        //Database.EnsureCreated();   // создаем бд с новой схемой
         _currentUserService = currentUserService;
         _dateTime = dateTime;
     }
@@ -61,24 +58,11 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
 
         var result = await base.SaveChangesAsync(cancellationToken);
 
-        await DispatchEvents(events);
-
         return result;
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        //builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
         base.OnModelCreating(builder);
-    }
-
-    private async Task DispatchEvents(DomainEvent[] events)
-    {
-        foreach (var @event in events)
-        {
-            @event.IsPublished = true;
-            await _domainEventService.Publish(@event);
-        }
     }
 }

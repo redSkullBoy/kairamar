@@ -1,4 +1,4 @@
-﻿using DataAccess.Sqlite;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Telegram.Bot;

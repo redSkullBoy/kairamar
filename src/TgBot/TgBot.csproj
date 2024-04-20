@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationServices.Implementation\ApplicationServices.Implementation.csproj" />
+    <ProjectReference Include="..\DataAccess.PostgreSQL\DataAccess.PostgreSQL.csproj" />
     <ProjectReference Include="..\DataAccess.Sqlite\DataAccess.Sqlite.csproj" />
     <ProjectReference Include="..\Infrastructure.Implementation\Infrastructure.Implementation.csproj" />
     <ProjectReference Include="..\UseCases\UseCases.csproj" />

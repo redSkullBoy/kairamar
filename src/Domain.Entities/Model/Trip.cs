@@ -1,5 +1,4 @@
-﻿using DataAccess.Sqlite;
-using Domain.Entities.Common;
+﻿using Domain.Entities.Common;
 
 namespace Domain.Entities.Model;
 

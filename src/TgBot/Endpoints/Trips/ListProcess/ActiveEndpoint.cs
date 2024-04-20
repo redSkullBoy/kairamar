@@ -4,7 +4,7 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using MediatR;
 using UseCases.Handlers.Trips.Queries;
-using DataAccess.Sqlite;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using TgBot.Templates;
 using TgBot.Constants;

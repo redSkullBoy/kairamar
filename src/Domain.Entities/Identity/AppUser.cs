@@ -2,7 +2,7 @@
 using Domain.Entities.Model;
 using Microsoft.AspNetCore.Identity;
 
-namespace DataAccess.Sqlite;
+namespace Domain.Entities;
 
 public class AppUser : IdentityUser
 {
