@@ -17,6 +17,8 @@ public class DataAccessModule : Module
         Configuration!.GetSection(nameof(PostgreSQLOptions))
             .Bind(pgOptions);
 
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         services.AddDbContext<IDbContext, AppDbContext>(options =>
             options.UseNpgsql(pgOptions.Connection)
             .UseSnakeCaseNamingConvention());

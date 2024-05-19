@@ -1,4 +1,8 @@
-﻿using Telegram.Bot.Types;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using TgBot.BotEndpoints.Constants;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 
@@ -44,7 +48,12 @@ public class MessageReceivedStrategy : BaseReceivedStrategy<Message, MessageEndp
     {
         _logger.LogInformation("Receive message type: {MessageType}", update.Message!.Type);
 
-        await HandleEndpointAsync(update.Message!, update.Message!.Text!, update.Type, cancellationToken);
+        if(update.Message!.Type != MessageType.Text)
+        {
+            await HandleMessageEndpointAsync(update.Message!, update.Message!.Type!, update.Type, cancellationToken);
+        }
+        else
+            await HandleEndpointAsync(update.Message!, update.Message!.Text!, update.Type, cancellationToken);
     }
 
     public async Task HandleUserStateAsync(Update update, Type userStateEndpoint, string userState, CancellationToken cancellationToken)

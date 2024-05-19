@@ -59,7 +59,7 @@ public class AddEndDateEndpoint : MessageEndpoint
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
-                text: "Неверный формат времени. Введите время в формате: 1 30",
+                text: "Неверный формат времени. Введите время в формате: 1 60",
                 replyMarkup: new ReplyKeyboardRemove(),
                 cancellationToken: cancellationToken);
 

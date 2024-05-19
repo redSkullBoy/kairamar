@@ -1,4 +1,6 @@
 ﻿using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints.Auxiliary;
 
 namespace TgBot.BotEndpoints.Endpoints
@@ -14,6 +16,16 @@ namespace TgBot.BotEndpoints.Endpoints
         {
             Configure();
         }
+
+        /// <summary>
+        /// Для вызова основного хендлера
+        /// </summary>
+        /// <param name="preBotClient"></param>
+        /// <param name="chatId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task PreparationAsync(ITelegramBotClient preBotClient, long chatId, CancellationToken cancellationToken)
+            => throw new NotImplementedException();
 
         /// <summary>
         /// the handler method for the endpoint. this method is called for each request received.
@@ -48,6 +60,9 @@ namespace TgBot.BotEndpoints.Endpoints
             Definition.Routes = patterns;
             Definition.IsPreRoute = true;
         }
+
+        protected virtual void SetMessageType(MessageType type)
+            => Definition.MessageType = type;
     }
 }
 

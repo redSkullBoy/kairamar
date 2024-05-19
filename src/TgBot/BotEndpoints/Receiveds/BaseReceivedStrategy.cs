@@ -82,4 +82,22 @@ public class BaseReceivedStrategy<TRequest, TEndpoint>
             await implementation.DefaultHandleAsync(request, userState, cancellationToken);
         }
     }
+
+    public async Task HandleMessageEndpointAsync(TRequest request, MessageType key, UpdateType type, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var endpointServices = (IEnumerable<TEndpoint>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
+
+        if (_receivedDef.TryGetValueMessageType(key, out var endpointWithoutStatus))
+        {
+            var implementation = endpointServices.First(impl => impl.GetType() == endpointWithoutStatus);
+            await implementation.HandleAsync(request, cancellationToken);
+        }
+        // Для DefaultEndpoint
+        else if (_receivedDef.TryGetValueEndpoint(BaseEndpointConst.DEFAULT, type, false, out var endpoint))
+        {
+            var implementation = endpointServices.First(impl => impl.GetType() == endpoint);
+            await implementation.DefaultHandleAsync(request, string.Empty, cancellationToken);
+        }
+    }
 }

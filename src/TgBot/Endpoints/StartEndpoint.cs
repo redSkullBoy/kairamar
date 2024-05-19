@@ -79,6 +79,8 @@ public class StartEndpoint : MessageEndpoint
                         text: $"Привет, {prettyUserName}!!! \nЯ бот по подбору поездок. \nЕсть две роли: водитель, пассажир. \nВыберите роль в меню",
                         cancellationToken: cancellationToken);
 
+        await SetContactEndpoint.PreparationAsync(_botClient, message.Chat.Id, cancellationToken);
+
         return;
     }
 }

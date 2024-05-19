@@ -38,7 +38,19 @@ public class IsInitiatorEndpoint : MessageEndpoint
         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
         if (user == null)
-            return;
+        {
+            user = new AppUser
+            {
+                UserName = message.From.Username,
+                FirstName = message.From.FirstName,
+                LastName = message.From.LastName,
+            };
+
+            //Это создаст нового пользователя в таблице AspNetUsers без пароля
+            await _userManager.CreateAsync(user);
+
+            await _userManager.AddLoginAsync(user, info);
+        }
 
         user.UserType = AppUserType.Initiator;
 

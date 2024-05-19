@@ -6,11 +6,13 @@ public class ReceivedDefinition
 {
     private Dictionary<string, Type> _endpoints;
     private Dictionary<string, Type> _userStates;
+    private Dictionary<MessageType, Type> _messageTypes;
 
     public ReceivedDefinition()
     {
         _endpoints = new Dictionary<string, Type>();
-        _userStates = new();
+        _userStates = new Dictionary<string, Type>();
+        _messageTypes = new Dictionary<MessageType, Type>();
     }
 
     public Dictionary<string, Type> UserStates { get { return _userStates; } }
@@ -58,5 +60,25 @@ public class ReceivedDefinition
     private string KeyGenerating(string key, UpdateType type, bool isPreRoute)
     {
         return $"{key}_{type}_{isPreRoute}";
+    }
+
+    public void AddMessageTypes(Dictionary<MessageType, Type> messageTypes)
+    {
+        foreach (var item in messageTypes)
+        {
+            _messageTypes.Add(item.Key, item.Value);
+        }
+    }
+
+    public bool TryGetValueMessageType(MessageType key, out Type? value)
+    {
+        if (_messageTypes!.TryGetValue(key, out var result))
+        {
+            value = result;
+            return true;
+        }
+
+        value = default;
+        return false;
     }
 }

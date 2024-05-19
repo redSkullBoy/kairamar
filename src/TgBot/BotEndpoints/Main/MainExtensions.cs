@@ -70,6 +70,7 @@ public static class MainExtensions
     {
         var regEndpoints = new Dictionary<string, (Type type, bool isPreRoute)>();
         var userStatesEndpoints = new Dictionary<string, Type>();
+        var messageTypesEndpoints = new Dictionary<MessageType, Type>();
 
         using var scope = app.ApplicationServices.CreateScope();
         var endpointServices = (IEnumerable<BaseEndpoint<TBotType>>)scope.ServiceProvider.GetServices(typeof(TEndpoint));
@@ -78,8 +79,9 @@ public static class MainExtensions
         {
             var routes = endpointService.Definition.Routes;
             var userState = endpointService.Definition.UserState;
+            var messageType = endpointService.Definition.MessageType;
 
-            if (routes == null && userState == null)
+            if (routes == null && userState == null && messageType == null)
                 throw new ArgumentNullException(nameof(userState));
 
             foreach (var route in routes.OrEmptyIfNull())
@@ -93,6 +95,11 @@ public static class MainExtensions
                 userStatesEndpoints.Add(userState, endpointService.GetType());
             }
             #endregion
+
+            if (messageType != null)
+            {
+                messageTypesEndpoints.Add(messageType.Value, endpointService.GetType());
+            }
         }
 
         if (!regEndpoints!.TryGetValue(BaseEndpointConst.DEFAULT, out var endpoint))
@@ -100,5 +107,6 @@ public static class MainExtensions
 
         receivedDefinition.AddEndpoints(regEndpoints, type);
         receivedDefinition.AddStates(userStatesEndpoints);
+        receivedDefinition.AddMessageTypes(messageTypesEndpoints);
     }
 }
