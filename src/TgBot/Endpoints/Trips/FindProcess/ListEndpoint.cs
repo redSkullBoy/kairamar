@@ -79,6 +79,7 @@ public class ListEndpoint : CallbackQueryEndpoint
         {
             var r = $"""
                 - Пользователь: @{item.InitiatorName}
+                - Номер: {item.InitiatorPhone}
                 - Пункт отправления: {item.FromAddressName}
                 - Пункт назначения: {item.ToAddressName}
                 - Дату и время отправления: {_dateTime.ToRussianString(item.StartDateLocal)}

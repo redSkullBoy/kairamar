@@ -21,6 +21,7 @@ public class TripDto
         Price = trip.Price;
         InitiatorId = trip.InitiatorId;
         InitiatorName = trip.Initiator?.UserName;
+        InitiatorPhone = trip.Initiator?.PhoneNumber;
     }
 
     public int Id { get; set; }
@@ -46,4 +47,6 @@ public class TripDto
 
     public string InitiatorId { get; set; } = string.Empty;
     public string? InitiatorName { get; set; } = null;
+
+    public string? InitiatorPhone { get; set; }
 }
