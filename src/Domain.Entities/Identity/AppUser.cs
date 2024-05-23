@@ -10,6 +10,8 @@ public class AppUser : IdentityUser
 
     public string? LastName { get; set; }
 
+    public string? TimeZoneId { get; set; }
+
     public AppUserType UserType { get; set; }
 
     public int? LastAddressId { get; set; }

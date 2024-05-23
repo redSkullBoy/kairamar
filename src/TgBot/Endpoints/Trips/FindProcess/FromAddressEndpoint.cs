@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using GeoTimeZone;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Telegram.Bot;
@@ -8,7 +9,6 @@ using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
 using TgBot.Services;
-using TgBot.Templates;
 using UseCases.Handlers.Addresses.Queries;
 using UseCases.Handlers.Trips.Dto;
 
@@ -67,6 +67,22 @@ public class FromAddressEndpoint : CallbackQueryEndpoint
             return;
         }
 
+        double lat = 0;
+        double lon = 0;
+
+        double.TryParse(result.Value.GeoLat, System.Globalization.CultureInfo.InvariantCulture, out lat);
+        double.TryParse(result.Value.GeoLon, System.Globalization.CultureInfo.InvariantCulture, out lon);
+
+        var user = await _userManager.FindByNameAsync(callbackQuery.From.Username!);
+
+        if (lat != 0 && lon != 0 && user != null)
+        {
+            string timeZoneId = TimeZoneLookup.GetTimeZone(lat, lon).Result;
+
+            user.TimeZoneId = timeZoneId;
+            await _userManager.UpdateAsync(user);
+        }
+
         var filter = new TripFilter
         {
             FromAddressId = addressId,
@@ -75,7 +91,20 @@ public class FromAddressEndpoint : CallbackQueryEndpoint
 
         _cache.SetTripFilter(callbackQuery.From!.Id, filter, TimeSpan.FromMinutes(5));
 
-        await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт назначения", result.Value.Value);
+        string info = $"""
+                            Для поиска поездки укажите следующую информацию:
+                            - Пункт отправления {result.Value.Value}
+                            - Пункт назначения
+                            - Дату и время отправления
+
+                            Введите - Пункт назначения
+                            """;
+
+        await _botClient.SendTextMessageAsync(
+            chatId: callbackQuery.Message!.Chat.Id,
+            text: info,
+            replyMarkup: new ReplyKeyboardRemove(),
+            cancellationToken: cancellationToken);
 
         _userBotService.NetxState(callbackQuery.From!.Id);
     }

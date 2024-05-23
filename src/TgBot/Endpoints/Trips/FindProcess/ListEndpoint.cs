@@ -6,6 +6,7 @@ using UseCases.Handlers.Trips.Queries;
 using TgBot.Constants;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.Services;
+using Infrastructure.Interfaces.Services;
 
 namespace TgBot.Endpoints.Trips.FindProcess;
 
@@ -14,12 +15,14 @@ public class ListEndpoint : CallbackQueryEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly IMediator _mediator;
     private readonly MemoryCacheService _cache;
+    private readonly IDateTime _dateTime;
 
-    public ListEndpoint(ITelegramBotClient botClient, IMediator mediator, MemoryCacheService cache)
+    public ListEndpoint(ITelegramBotClient botClient, IMediator mediator, MemoryCacheService cache, IDateTime dateTime)
     {
         _botClient = botClient;
         _mediator = mediator;
         _cache = cache;
+        _dateTime = dateTime;
     }
 
     public override void Configure()
@@ -78,7 +81,7 @@ public class ListEndpoint : CallbackQueryEndpoint
                 - Пользователь: @{item.InitiatorName}
                 - Пункт отправления: {item.FromAddressName}
                 - Пункт назначения: {item.ToAddressName}
-                - Дату и время отправления: {item.StartDateLocal.ToString("f")}
+                - Дату и время отправления: {_dateTime.ToRussianString(item.StartDateLocal)}
                 - Количество свободных мест: {item.RequestedSeats}
                 - Стоимость поездки: {item.Price}
                 - Описание: {item.Description}

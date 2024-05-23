@@ -1,4 +1,7 @@
-﻿using Telegram.Bot;
+﻿using Domain.Entities;
+using Infrastructure.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
@@ -13,12 +16,17 @@ public class AddStartDateEndpoint : CallbackQueryEndpoint
     private readonly IUserBotService _userBotService;
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
+    private readonly IDateTime _dateTime;
+    private readonly UserManager<AppUser> _userManager;
 
-    public AddStartDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache)
+    public AddStartDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
+        IDateTime dateTime, UserManager<AppUser> userManager)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
+        _dateTime = dateTime;
+        _userManager = userManager;
     }
 
     public override void Configure()
@@ -31,19 +39,20 @@ public class AddStartDateEndpoint : CallbackQueryEndpoint
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
-
         var startData = new DateTime();
+
+        var user = await _userManager.FindByNameAsync(callbackQuery.From!.Username!);
 
         switch (callbackQuery.Data)
         {
             case "today":
-                startData = DateTime.Now;
+                startData = _dateTime.TimeZoneNow(user!.TimeZoneId);
                 break;
             case "tomorrow":
-                startData = DateTime.Now.AddDays(1);
+                startData = _dateTime.TimeZoneNow(user!.TimeZoneId).AddDays(1);
                 break;
             case "afterTomorrow":
-                startData = DateTime.Now.AddDays(2);
+                startData = _dateTime.TimeZoneNow(user!.TimeZoneId).AddDays(2);
                 break;
         }
 

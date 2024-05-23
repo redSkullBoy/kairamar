@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Infrastructure.Interfaces.Services;
+using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -17,13 +18,16 @@ public class AddDescriptionEndpoint : MessageEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
     private readonly IMediator _mediator;
+    private readonly IDateTime _dateTime;
 
-    public AddDescriptionEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, IMediator mediator)
+    public AddDescriptionEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
+        IMediator mediator, IDateTime dateTime)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
         _mediator = mediator;
+        _dateTime = dateTime;
     }
 
     public override void Configure()
@@ -44,7 +48,7 @@ public class AddDescriptionEndpoint : MessageEndpoint
         string info = $"""
             - Пункт отправления: {result.Value.FromAddressName}
             - Пункт назначения: {result.Value.ToAddressName}
-            - Дату и время отправления: {result.Value.StartDateLocal}
+            - Дату и время отправления: {_dateTime.ToRussianString(result.Value.StartDateLocal)}
             - Количество свободных мест: {result.Value.RequestedSeats}
             - Стоимость поездки: {result.Value.Price}
 

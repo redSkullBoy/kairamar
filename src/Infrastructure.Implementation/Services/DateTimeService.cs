@@ -11,9 +11,13 @@ public class DateTimeService : IDateTime
         return TimeZoneInfo.ConvertTimeFromUtc(now, timeZone);
     }
 
-    public DateTime TimeZoneNow(string timeZoneId)
+    public DateTime TimeZoneNow(string? timeZoneId)
     {
         var now = DateTime.UtcNow;
+
+        if (timeZoneId == null)
+            return now;
+
         TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
         return TimeZoneInfo.ConvertTimeFromUtc(now, timeZone);
     }

@@ -1,7 +1,9 @@
 ﻿using DataAccess.Sqlite;
 using Domain.Entities;
+using GeoTimeZone;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -66,9 +68,22 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
                 chatId: callbackQuery.Message!.Chat.Id,
                 text: "Ошибка при получение адреса",
                 replyMarkup: new ReplyKeyboardRemove(),
-                cancellationToken: cancellationToken);
-
+            cancellationToken: cancellationToken);
             return;
+        }
+
+        double lat = 0;
+        double lon = 0;
+
+        double.TryParse(result.Value.GeoLat, System.Globalization.CultureInfo.InvariantCulture, out lat);
+        double.TryParse(result.Value.GeoLon, System.Globalization.CultureInfo.InvariantCulture, out lon);
+
+        if(lat != 0 && lon != 0 && user != null)
+        {
+            string timeZoneId = TimeZoneLookup.GetTimeZone(lat, lon).Result;
+
+            user.TimeZoneId = timeZoneId;
+            await _userManager.UpdateAsync(user);
         }
 
         var trip = new CreateTripDto
@@ -78,8 +93,6 @@ public class AddFromAddressEndpoint : CallbackQueryEndpoint
         };
 
         _cache.SetTrip(callbackQuery.From!.Id, trip, TimeSpan.FromMinutes(5));
-
-        //await _botClient.SendInitiatorMenu(callbackQuery.Message!.Chat.Id, cancellationToken);
 
         string info = $"""
                     - Пункт отправления: {result.Value.Value}

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 using Telegram.Bot;
@@ -17,13 +18,16 @@ public class StartTimeEndpoint : MessageEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IDateTime _dateTime;
 
-    public StartTimeEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public StartTimeEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
+        UserManager<AppUser> userManager, IDateTime dateTime)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
         _userManager = userManager;
+        _dateTime = dateTime;
     }
 
     public override void Configure()
@@ -77,12 +81,17 @@ public class StartTimeEndpoint : MessageEndpoint
             return;
         }
 
+        var user = await _userManager.FindByNameAsync(message.From!.Username!);
+
         var filter = _cache.GetTripFilterOrNull(message.From!.Id)!;
 
         var timeOnly = TimeOnly.Parse(formattedTime);
-        var requiresTime = new TimeSpan(1, 0, 0);
+
+        var oneHourLater = _dateTime.TimeZoneNow(user!.TimeZoneId).AddHours(1);
+        var inputDateTime = new DateOnly(oneHourLater.Year, oneHourLater.Month, oneHourLater.Day).ToDateTime(timeOnly);
         //проверка что время больше 1 часа
-        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() >= requiresTime && filter.StartDateLocal.Day == DateTime.Now.Day)
+        if (inputDateTime <= oneHourLater
+            && filter.StartDateLocal.Day == _dateTime.TimeZoneNow(user!.TimeZoneId).Day)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,
@@ -97,8 +106,6 @@ public class StartTimeEndpoint : MessageEndpoint
         filter.StartDateLocal = dateOnly.ToDateTime(timeOnly);
 
         _cache.SetTripFilter(message.From!.Id, filter, TimeSpan.FromMinutes(5));
-
-        var user = await _userManager.FindByNameAsync(message.From.Username!);
 
         if (user != null)
         {
@@ -120,7 +127,7 @@ public class StartTimeEndpoint : MessageEndpoint
                             Данные поиска:
                             - Пункт отправления {filter.FromAddress}
                             - Пункт назначения {filter.ToAddress}
-                            - Дату и время отправления {filter.StartDateLocal}
+                            - Дату и время отправления {_dateTime.ToRussianString(filter.StartDateLocal)}
                             """;
 
         await _botClient.SendTextMessageAsync(

@@ -1,9 +1,9 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TgBot.BotEndpoints.Endpoints;
 using TgBot.BotEndpoints.Services;
 using TgBot.Constants;
-using TgBot.Templates;
 
 namespace TgBot.Endpoints.Trips.FindProcess;
 
@@ -29,7 +29,20 @@ public class FindEndpoint : CallbackQueryEndpoint
             callbackQueryId: callbackQuery.Id,
             cancellationToken: cancellationToken);
 
-        await _botClient.SendTripFindInfo(callbackQuery.Message!.Chat.Id, cancellationToken, "Введите - Пункт отправления");
+        string info = $"""
+                            Для поиска поездки укажите следующую информацию:
+                            - Пункт отправления
+                            - Пункт назначения
+                            - Дату и время отправления
+
+                            Введите - Пункт отправления
+                            """;
+
+        await _botClient.SendTextMessageAsync(
+            chatId: callbackQuery.Message!.Chat.Id,
+            text: info,
+            replyMarkup: new ReplyKeyboardRemove(),
+            cancellationToken: cancellationToken);
 
         _userBotService.SetProcess(callbackQuery.From.Id, UserProcesses.TripFind);
     }

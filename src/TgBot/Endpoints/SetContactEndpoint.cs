@@ -29,7 +29,11 @@ public class SetContactEndpoint : MessageEndpoint
     public static async Task PreparationAsync(ITelegramBotClient preBotClient, long chatId, CancellationToken cancellationToken)
     {
         var keyboardBtn = KeyboardButton.WithRequestContact("Поделиться номером");
-        var keyboard = new ReplyKeyboardMarkup(keyboardBtn);
+
+        ReplyKeyboardMarkup keyboard = new(new[]
+        {
+            keyboardBtn,
+        });
 
         await preBotClient.SendTextMessageAsync(chatId: chatId, 
             text: "Пожалуйста, укажите свой номер телефона.", 

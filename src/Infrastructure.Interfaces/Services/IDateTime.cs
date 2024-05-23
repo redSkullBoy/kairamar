@@ -4,7 +4,7 @@ public interface IDateTime
 {
     public DateTime MoscowNow();
 
-    public DateTime TimeZoneNow(string timeZoneId);
+    public DateTime TimeZoneNow(string? timeZoneId);
 
     public DateTime ConvertToTimeZone(DateTime dateTime, string timeZoneId);
 

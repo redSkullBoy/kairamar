@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using TgBot.Templates;
 using TgBot.Constants;
 using Telegram.Bot.Types.ReplyMarkups;
+using Infrastructure.Interfaces.Services;
 
 namespace TgBot.Endpoints.Trips.ListProcess;
 
@@ -18,13 +19,16 @@ public class ActiveEndpoint : CallbackQueryEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly IMediator _mediator;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IDateTime _dateTime;
 
-    public ActiveEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, IMediator mediator, UserManager<AppUser> userManager)
+    public ActiveEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, IMediator mediator, 
+        UserManager<AppUser> userManager, IDateTime dateTime)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _mediator = mediator;
         _userManager = userManager;
+        _dateTime = dateTime;
     }
 
     public override void Configure()
@@ -91,7 +95,7 @@ public class ActiveEndpoint : CallbackQueryEndpoint
             var r = $"""
                 - Пункт отправления: {item.FromAddressName}
                 - Пункт назначения: {item.ToAddressName}
-                - Дату и время отправления: {item.StartDateLocal.ToString("f")}
+                - Дату и время отправления: {_dateTime.ToRussianString(item.StartDateLocal)}
                 - Количество свободных мест: {item.RequestedSeats}
                 - Стоимость поездки: {item.Price}
                 """;

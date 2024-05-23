@@ -59,7 +59,12 @@ public class AddToAddressEndpoint : CallbackQueryEndpoint
 
         var trip = _cache.GetTripOrNull(callbackQuery.From!.Id) ?? new CreateTripDto();
 
-        var result = await _mediator.Send(new CoincidSettlementRequest { FromAddressId = trip.FromAddressId, ToAddressId = addressId }, cancellationToken);
+        var result = await _mediator.Send(
+            new CoincidSettlementRequest 
+            { 
+                FromAddressId = trip.FromAddressId, 
+                ToAddressId = addressId 
+            }, cancellationToken);
 
         if (!result.IsSuccess)
         {

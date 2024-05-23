@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 using Telegram.Bot;
@@ -17,13 +18,16 @@ public class AddEndDateEndpoint : MessageEndpoint
     private readonly ITelegramBotClient _botClient;
     private readonly MemoryCacheService _cache;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IDateTime _dateTime;
 
-    public AddEndDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, UserManager<AppUser> userManager)
+    public AddEndDateEndpoint(IUserBotService userBotService, ITelegramBotClient botClient, MemoryCacheService cache, 
+        UserManager<AppUser> userManager, IDateTime dateTime)
     {
         _userBotService = userBotService;
         _botClient = botClient;
         _cache = cache;
         _userManager = userManager;
+        _dateTime = dateTime;
     }
 
     public override void Configure()
@@ -77,10 +81,12 @@ public class AddEndDateEndpoint : MessageEndpoint
             return;
         }
 
+        var user = await _userManager.FindByNameAsync(message.From!.Username!);
+
         var timeOnly = TimeOnly.Parse(formattedTime);
         var requiresTime = new TimeSpan(0, 30, 0);
         //проверка что время больше 30 минут
-        if (DateTime.Now.TimeOfDay - timeOnly.ToTimeSpan() <= requiresTime)
+        if (_dateTime.TimeZoneNow(user!.TimeZoneId).TimeOfDay - timeOnly.ToTimeSpan() <= requiresTime)
         {
             await _botClient.SendTextMessageAsync(
                 chatId: message!.Chat.Id,

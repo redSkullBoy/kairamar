@@ -43,23 +43,4 @@ public static class PassengersTemplates
             replyMarkup: inlineKeyboard,
             cancellationToken: ctn);
     }
-
-    public static async Task SendTripFindInfo(this ITelegramBotClient botClient, long chatId, CancellationToken ctn, string action, 
-        string? fromAddress = null, string? toAddress = null, string? startDate = null, InlineKeyboardMarkup inlineKeyboard = null)
-    {
-        string info = $"""
-                            Для поиска поездки укажите следующую информацию:
-                            - Пункт отправления {fromAddress}
-                            - Пункт назначения {toAddress}
-                            - Дату и время отправления {startDate}
-
-                            {action}
-                            """;
-
-        await botClient.SendTextMessageAsync(
-            chatId: chatId,
-            text: info,
-            replyMarkup: inlineKeyboard != null ? inlineKeyboard : new ReplyKeyboardRemove(),
-            cancellationToken: ctn);
-    }
 }
