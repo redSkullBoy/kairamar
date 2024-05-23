@@ -18,16 +18,6 @@ namespace TgBot.BotEndpoints.Endpoints
         }
 
         /// <summary>
-        /// Для вызова основного хендлера
-        /// </summary>
-        /// <param name="preBotClient"></param>
-        /// <param name="chatId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async Task PreparationAsync(ITelegramBotClient preBotClient, long chatId, CancellationToken cancellationToken)
-            => throw new NotImplementedException();
-
-        /// <summary>
         /// the handler method for the endpoint. this method is called for each request received.
         /// </summary>
         /// <param name="req">the request dto</param>

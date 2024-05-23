@@ -40,12 +40,12 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
             {
                 case EntityState.Added:
                     entry.Entity.CreatedBy = _currentUserService.Id;
-                    entry.Entity.Created = _dateTime.Now;
+                    entry.Entity.Created = _dateTime.MoscowNow();
                     break;
 
                 case EntityState.Modified:
                     entry.Entity.LastModifiedBy = _currentUserService.Id;
-                    entry.Entity.LastModified = _dateTime.Now;
+                    entry.Entity.LastModified = _dateTime.MoscowNow();
                     break;
             }
         }

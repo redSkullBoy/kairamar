@@ -12,7 +12,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IDateTime _dateTime;
-    private readonly IDomainEventService _domainEventService;
 
     public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUserService currentUserService, IDateTime dateTime)
             : base(options)
@@ -43,12 +42,12 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
             {
                 case EntityState.Added:
                     entry.Entity.CreatedBy = _currentUserService.Id;
-                    entry.Entity.Created = _dateTime.Now;
+                    entry.Entity.Created = _dateTime.MoscowNow();
                     break;
 
                 case EntityState.Modified:
                     entry.Entity.LastModifiedBy = _currentUserService.Id;
-                    entry.Entity.LastModified = _dateTime.Now;
+                    entry.Entity.LastModified = _dateTime.MoscowNow();
                     break;
             }
         }
@@ -61,8 +60,6 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
 
         var result = await base.SaveChangesAsync(cancellationToken);
 
-        await DispatchEvents(events);
-
         return result;
     }
 
@@ -71,14 +68,5 @@ public class AppDbContext : IdentityDbContext<AppUser>, IDbContext
         //builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(builder);
-    }
-
-    private async Task DispatchEvents(DomainEvent[] events)
-    {
-        foreach (var @event in events)
-        {
-            @event.IsPublished = true;
-            await _domainEventService.Publish(@event);
-        }
     }
 }

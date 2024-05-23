@@ -59,7 +59,7 @@ public static class PassengersTemplates
         await botClient.SendTextMessageAsync(
             chatId: chatId,
             text: info,
-            replyMarkup: inlineKeyboard,
+            replyMarkup: inlineKeyboard != null ? inlineKeyboard : new ReplyKeyboardRemove(),
             cancellationToken: ctn);
     }
 }
